@@ -34,6 +34,12 @@ Because everything is packaged into docker containers, you should use VMs with t
 
 When setting up a VM, make sure to change the **Access Scopes** to either "Allow full access to all Cloud APIs", or "Set Access for each API" and set the **BigQuery** dropdown to "Enabled".
 
+Copy this repo into your VM using:
+
+```shell
+git clone -b simon https://github.com/aivscovid19/data_pipeline.git
+```
+
 ## Starting the Containers
 
 Each of these containers will run endlessly, so they should continue until you use the `docker stop` command to stop them. If this doesn't happen, check the Troubleshooting section below.
