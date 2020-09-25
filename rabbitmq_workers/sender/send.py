@@ -18,10 +18,8 @@ DELAY = int(environ.get('DELAY'))
 assert None not in [mq_user, mq_pass, host_ip], "Include a .env file using the docker argument --env-file when running."
 
 credentials = pika.PlainCredentials(mq_user, mq_pass)
-#credentials = pika.PlainCredentials('guest','guest')
 
 connection = pika.BlockingConnection(
-    #pika.ConnectionParameters(host='10.128.0.7', credentials=credentials))
     pika.ConnectionParameters(host=host_ip, credentials=credentials))
 channel = connection.channel()
 
@@ -29,32 +27,11 @@ channel.queue_declare(queue='task_queue', durable=True)
 
 statusTable = StatusTable().GetOrCreate()
 
-#def CollectURLsFromBQ(client = bigquery.Client()):
-    #'''
-    #Gather URLs from the globaly query named "QUERY".
-#
-    #The table you query from MUST have the schema discussed in our meetings.
-    #'''
-    #global QUERY
-    #query_job = bq_client.query(QUERY)
-    #rows = query_job.result()
-    #json_rows = []
-    #for row in rows:
-        #row = dict(row)
-        #row.pop('rn')  # Don't include the row number entry
-        #json_rows.append(row)
-    #return json_rows
-
-
-#bq_client = bigquery.Client()
 # Start the listening loop
 try:
     while True:  # Use sigint to break the loop
-        #newData = CollectURLsFromBQ()
-        #newData = StatusTable.Query(QUERY)
         newData = statusTable.GetNewURLs()
 
-        #table = bq_client.get_table('urls.status')
         for row in newData:
             # Remove extra data that doesn't need to be sent
             row.pop('timestamp')

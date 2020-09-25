@@ -50,8 +50,9 @@ def GetArticle(url):
         "body": miner.results['body'],
         # Dates are somewhat complicated - but this essentially just converts YYYY-MM-DD or YYYY/MM/DD into a datetime object (at midnight)
         "acquisition_date": datetime.combine(date(*[int(x) for x in miner.results['date_aquisition'].split("-")]), time),
-        "publication_date": datetime.combine(date(*[int(x) for x in miner.results['date_publication'].split("/")]), time)
     }
+    if miner.results['date_publication'] is not None:
+        data["publication_date"] = datetime.combine(date(*[int(x) for x in miner.results['date_publication'].split("/")]), time)
 
     # Add the meta info
     meta_info = {

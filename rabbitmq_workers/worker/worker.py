@@ -3,6 +3,7 @@ import pika
 import time
 import json
 from os import environ
+from urllib.parse import urlparse
 import uuid
 from datetime import datetime
 from google.cloud import bigquery
@@ -56,12 +57,30 @@ def callback(ch, method, properties, body):
     # Do the actual mining
     import miners
     print("getting article info from", status['article_url'], flush=True)
-    domain = status['catalog_url'].split(".")[0]
-    miner = getattr(miners, domain, None)
+    #domain = status['catalog_url'].split(".")[0]
+    domain = urlparse(status['article_url']).netloc.split('.')[1]  # Get rid of the extension and subdomain
+    print("Using domain:", domain, flush=True)
+    miner = getattr(miners, domain.lower(), None)
     if miner is None:
-        print("Mining failed.")
+        print("Mining failed.", flush=True)
+        status['status'] = 'Failed'
+        status['timestamp'] = datetime.utcnow()
+        errors = statusTable.insert_row(status)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+        if errors != []:
+            print(f"We've got some errors when updating bq: {errors}", flush=True)
         return
     data = miner.GetArticle(status['article_url'])
+    if data is None:
+        print("Mining returned no results.", flush=True)
+        status['status'] = "No results"
+        status['timestamp'] = datetime.utcnow()
+        errors = statusTable.insert_row(status)
+        if errors != []:
+            print(f"We've got some errors when updating bq: {errors}", flush=True)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+        return
+    data['language'] = status['language']  # Should always be true...
     print("\nGot data:", flush=True)
     print(*data.items(), sep='\n')
 
@@ -73,10 +92,6 @@ def callback(ch, method, properties, body):
     # Send an update to bq that we're done
     status['status'] = 'Finished Mining'
     status['timestamp'] = datetime.utcnow()
-    #bq_client.insert_rows(
-    #        table = table,
-    #        rows = [status]
-    #)
     errors = statusTable.insert_row(status)
     if errors != []:
         print(f"We've got some errors when updating bq: {errors}", flush=True)
