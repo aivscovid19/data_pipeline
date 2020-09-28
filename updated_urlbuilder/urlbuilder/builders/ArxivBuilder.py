@@ -47,10 +47,12 @@ class URLBuilder:
                     'status': "Not Mined",
                     'timestamp': datetime.utcnow(),
                     'worker_id': None,
-                    'meta_info': '{"search_terms": [' + ",".join(keywords) + ']}'
+                    'meta_info': '{"search_terms": ["' + '","'.join(keywords) + '"]}'
                 }
-                statusTable.insert_row(status)
+                errors = statusTable.insert_row(status)
                 print("Inserting to table:", status)
+                if errors != []:
+                    print("Errors encountered:", errors)
                 total_inserted += 1
                 if total_inserted == limit:
                     break
@@ -61,6 +63,7 @@ class URLBuilder:
 
             page_num += 1
             url = base_url + f"?skip={25*page_num}&show=25"
+            self.miner.wd.get(url)
             elems = self.miner.get(self.miner.site.link_elem, several=True)
 
     @classmethod
