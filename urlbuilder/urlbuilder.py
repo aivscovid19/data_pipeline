@@ -7,6 +7,7 @@ import datetime
 import math
 import time
 import json
+import uuid
 
 
 """URL Builder
@@ -68,7 +69,7 @@ class URLBuilder():
       df['language'] = df['article_url'].apply(lang)
       df['status'] = 'Not Mined'
       df['timestamp'] = pd.Timestamp(datetime.datetime.utcnow())
-      df['worker_id'] = None
+      df['worker_id'] = uuid.uuid1()
       df['meta_info'] = json.dumps(kwargs)
       return df
 

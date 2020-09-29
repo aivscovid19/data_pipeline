@@ -5,8 +5,12 @@ from urlbuilder import ScieloSearchLocations
 from urlbuilder import URLBuilder
 import centaurminer as mining
 import redis
+import time
+import rediswq
 import sys
 import os
+import functools
+print = functools.partial(print, flush=True)
 
 # The order is important here.
 # Be careful before changing any value.
@@ -33,6 +37,24 @@ job_config = bigquery.LoadJobConfig(schema=[
 ])
 
 
+def process_redis_queue(queue_name, host, builder):
+    q = rediswq.RedisWQ(name=queue_name, host=host)
+    print("Worker with sessionID: " +  q.sessionID())
+    print("Initial queue state: empty=" + str(q.empty()))
+    while not q.empty():
+      item = q.lease(lease_secs=10, block=True, timeout=2) 
+      if item is not None:
+        itemstr = item.decode("utf-8")
+        print("Working on " + itemstr)
+        result = builder.insert_into_gbq(itemstr)
+        print(f"Sent {result} article links to Google BigQuery")
+        q.complete(item)
+        time.sleep(10) # Put your actual work here instead of sleep.
+      else:
+        print("Waiting for work")
+    print("Queue empty, exiting")
+
+
 def main():
 
     # Google BigQuery Authentication. At first, we'll try to fetch
@@ -42,8 +64,8 @@ def main():
     try:
         client = bigquery.Client()
     except (KeyError, FileNotFoundError):
-        print("Invalid credentials. Set GOOGLE_APPLICATION_CREDENTIALS to your credentials file.");
-        exit(1);
+        print("Invalid credentials. Set GOOGLE_APPLICATION_CREDENTIALS to your credentials file.")
+        exit(1)
 
     # Project, dataset and table configuration
     #pandas_gbq.context.credentials = credentials
@@ -56,11 +78,9 @@ def main():
     scielo_builder = URLBuilder(miner)
 
     # Collect these number of URLs and store them in pd.DataFrame
-    r = redis.Redis(host=os.environ["REDIS_HOST"], port=6379, db=0)
-    search_page = r.rpop("search_pages").decode("utf-8")
-    result = scielo_builder.insert_into_gbq(search_page)
-    print("Sent {result} article links to Google BigQuery")
-
+    host = os.getenv("REDIS_SERVICE_HOST")
+    process_redis_queue("search_pages", host, scielo_builder)
+    
 
 if __name__  == "__main__":
     main()
