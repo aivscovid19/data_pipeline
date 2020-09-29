@@ -1,4 +1,4 @@
-#!venv /usr/bin/python3
+#!/usr/bin/env python
 
 from collector import ScieloSearchLocations
 from collector import CatalogCollector
@@ -21,6 +21,7 @@ def parse_args(argv):
     else:
         search_terms.pop()
     return search_terms, limit
+
 
 
 def main():

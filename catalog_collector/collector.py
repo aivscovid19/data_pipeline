@@ -6,7 +6,7 @@ import math
 import time
 
 class ScieloSearchLocations(mining.PageLocations):
-    """HTML locations on the earch page to be gathered by centaurminer"""
+    """HTML locations on the each page to be gathered by centaurminer"""
 
     link_elem = mining.Element('css_selector', 'a.showTooltip').get_attribute('href')
     finish = mining.Element("css_selector", "div.midGlyph.alert")
@@ -64,9 +64,6 @@ class CatalogCollector():
         total_hits = int(self.miner.get(self.miner.site.total_hits).replace(' ', ''))
         total = total_hits if limit is None or limit > total_hits else limit
         n_pages = math.ceil(total / URLS_PER_PAGE)
-        #for i in range(n_pages):
-        #    source_page = self._search_url(domain, keywords, i + 1)
-        #    print(source_page)
         return [self._search_url(domain, keywords, i + 1) for i in range(n_pages)]
 
 

@@ -16,4 +16,3 @@ RUN pip install redis
 COPY . .
 
 ENTRYPOINT ["python", "main.py"]
-#CMD ["cuscuz", "20"]
