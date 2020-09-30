@@ -18,6 +18,10 @@ This setup uses `redis` as the caching database / message broker. Therefore, it'
 
 ## Getting Started
 
+### General Advice
+
+1. This container was tested only in Google Compute Engine VMs, so this should be a good starting point to run this application. This is a good piece of advice, as we don't recommend doing web scraping on your local machine. To get things working easily, create this VM with a Service Account with read and write permissions to BigQuery.
+
 ### Docker 
 
 To get this system running on a pure docker environment, it's required to set up a new network which will connect all the containers with the caching database. First of all, let's create our own private network with a `bridge` driver. 
@@ -38,7 +42,11 @@ The purpose of this container is to run a job batch process. We define several k
 After the execution, several search pages will be available to the URL Builders to dump article links at the Google BigQuery. In this case, we can run the following commands.
 
     $ docker build -t builder urlbuilder
-    $ docker run --rm --network pcn builder
+    $ docker run --rm --network pcn                                 \
+        --env PROJECT_ID='my-project'                               \
+        --env TABLE_ID='my-dataset.my-table'                        \
+        --env GOOGLE_APPLICATION_CREDENTIALS='my-credentials.json'  \
+        builder
 
 The credentials file must be setup accordingly on the urlbuilder directory, as `credentials.json`, and with read and write privileges to BigQuery.
 
