@@ -18,8 +18,7 @@ RUN pip install pyarrow
 
 COPY . .
 
-ENV PROJECT_ID "for-adrian"
-ENV TABLE_ID "urls.articles_redis"
+ENV TABLE_ID "urlbuilder.links"
 ENV REDIS_SERVICE_HOST "redis-server"
 ENV GOOGLE_APPLICATION_CREDENTIALS "credentials.json"
 
