@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 import centaurminer as mining
 from .tables import StatusTable
@@ -50,12 +51,13 @@ class URLBuilder:
                     'meta_info': '{"search_terms": ["' + '","'.join(keywords) + '"]}'
                 }
                 errors = statusTable.insert_row(status)
-                print("Inserting to table:", status)
+                print("Inserting to table:", status, flush=True)
                 if errors != []:
-                    print("Errors encountered:", errors)
+                    print("Errors encountered:", errors, flush=True)
                 total_inserted += 1
                 if total_inserted == limit:
                     break
+                time.sleep(0.1)
 
             # Break out of outer (search page) loop if limit is reached
             if total_inserted == limit:
