@@ -10,6 +10,7 @@ pika = "*"
 google-cloud-bigquery = "*"
 flask = "*"
 google-cloud-pubsub = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
