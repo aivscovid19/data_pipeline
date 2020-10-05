@@ -9,6 +9,7 @@ verify_ssl = true
 pika = "*"
 google-cloud-bigquery = "*"
 flask = "*"
+google-cloud-pubsub = "*"
 
 [requires]
 python_version = "3.8"
