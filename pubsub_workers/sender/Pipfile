@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 pika = "*"
 google-cloud-bigquery = "*"
+flask = "*"
 
 [requires]
 python_version = "3.8"
