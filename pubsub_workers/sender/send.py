@@ -8,8 +8,8 @@ from flask import current_app, Flask, render_template, request
 from google.cloud import pubsub_v1
 
 # Read environment variables from a .env file
-import dotenv
-load_dotenv()
+#import dotenv
+#load_dotenv()
 
 app = Flask(__name__)
 
@@ -52,6 +52,9 @@ def index():
 # [START gae_flex_pubsub_push]
 @app.route('/pubsub/push', methods=['POST'])
 def pubsub_push():
+    '''
+    Currently, no use for this. But it could be used to push messages to a subscriber.
+    '''
     if (request.args.get('token', '') !=
             current_app.config['PUBSUB_VERIFICATION_TOKEN']):
         return 'Invalid request', 400
