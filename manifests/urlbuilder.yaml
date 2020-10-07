@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: urlbuilder
+  name: urlbuilder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: urlbuilder
+  template:
+    metadata:
+      labels:
+        app: urlbuilder
+    spec:
+      containers:
+      - env:
+        - name: PROJECT_ID
+          valueFrom:
+            configMapKeyRef:
+              key: PROJECT_ID
+              name: builder-config-8xil
+        - name: TABLE_ID
+          valueFrom:
+            configMapKeyRef:
+              key: TABLE_ID
+              name: builder-config-8xil
+        command: ["python", "."]
+        image: gcr.io/for-adrian/urlbuilder:latest
+        imagePullPolicy: IfNotPresent
+        name: urlbuilder
+      restartPolicy: Always
