@@ -1,17 +1,9 @@
 apiVersion: v1
+data:
+  PROJECT_ID: for-adrian
+  TABLE_ID: urls.articles
 kind: ConfigMap
 metadata:
+  labels:
+    app: builder
   name: urlbuilder-config
-data:
-  # property-like keys; each key maps to a simple value
-  player_initial_lives: "3"
-  ui_properties_file_name: "user-interface.properties"
-
-  # file-like keys
-  game.properties: |
-    enemy.types=aliens,monsters
-    player.maximum-lives=5
-  user-interface.properties: |
-    color.good=purple
-    color.bad=yellow
-    allow.textmode=true

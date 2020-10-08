@@ -20,12 +20,12 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: PROJECT_ID
-              name: builder-config-8xil
+              name: urlbuilder-config
         - name: TABLE_ID
           valueFrom:
             configMapKeyRef:
               key: TABLE_ID
-              name: builder-config-8xil
+              name: urlbuilder-config
         command: ["python", "."]
         image: gcr.io/for-adrian/urlbuilder:latest
         imagePullPolicy: IfNotPresent

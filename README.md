@@ -16,6 +16,8 @@ This setup uses `redis` as the caching database / message broker. Therefore, it'
 
     $ docker pull redis
 
+If you're going to do the Google Kubernetes Engine approach, make sure that you have installed the `gcloud` and `kubectl` command line utilities, and that you have an available GCP project to use along with it.
+
 ## Getting Started
 
 ### General Advice
@@ -49,6 +51,25 @@ After the execution, several search pages will be available to the URL Builders 
         builder
 
 The credentials file must be setup accordingly on the urlbuilder directory, as `credentials.json`, and with read and write privileges to BigQuery.
+
+### Google Kubernetes Engine
+
+It's advised to get a basic grasp on how Kubernetes works before moving to a test with the Google Kubernetes Engine
+
+Create a new Google Kubernetes Engine cluster. We're not going through the details on this tutorial. You can follow the instructions on [Creating a zonal cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster) before proceeding. We've been testing this setup with a pool of 3 nodes running `e2-medium` Compute Engine instances, but a lighter setup could probably run it as well.
+
+After setting up a new GKE cluster, connect to it to be able to use the `kubectl` command line utility. You can use the following command to achieve this. 
+
+    gcloud container clusters get-credentials <your-cluster-name> --zone <your-cluster-zone> --project <your-gcp-project>
+
+Now let's change the configuration; open the file `manifests/config.yaml` and update the fiels `PROJECT_ID` and `TABLE_ID` to your own Google BigQuery configuration. Open up the `manifests/collector-job.yaml` file and change your search parameters into the field `containers: args`.
+
+After setting up the connection, apply the YAML files present on the `manifests` directory, in the following order.
+
+    kubectl apply -f manifests/config.yaml
+    kubectl apply -f manifests/redis.yaml
+    kubectl apply -f manifests/urlbuilder.yaml
+    kubectl apply -f manifests/collector-job.yaml
 
 ### Available Websites
 

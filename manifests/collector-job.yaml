@@ -20,12 +20,12 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: PROJECT_ID
-              name: builder-config-8xil
+              name: urlbuilder-config
         - name: TABLE_ID
           valueFrom:
             configMapKeyRef:
               key: TABLE_ID
-              name: builder-config-8xil
+              name: urlbuilder-config
         image: gcr.io/for-adrian/catalogcollector:latest
         imagePullPolicy: IfNotPresent 
         name: collector
