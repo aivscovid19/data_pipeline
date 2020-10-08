@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  PROJECT_ID: for-adrian
+  TABLE_ID: urls.articles
+kind: ConfigMap
+metadata:
+  labels:
+    app: builder
+  name: urlbuilder-config

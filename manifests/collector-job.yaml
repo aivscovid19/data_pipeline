@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: collector-job
+spec:
+  template:
+    metadata:
+      name: collector-job
+    spec:
+      containers:
+      - args:
+        - salad
+        - carrot
+        - "100"
+        command:
+        - python
+        - main.py
+        env:
+        - name: PROJECT_ID
+          valueFrom:
+            configMapKeyRef:
+              key: PROJECT_ID
+              name: urlbuilder-config
+        - name: TABLE_ID
+          valueFrom:
+            configMapKeyRef:
+              key: TABLE_ID
+              name: urlbuilder-config
+        image: gcr.io/for-adrian/catalogcollector:latest
+        imagePullPolicy: IfNotPresent 
+        name: collector
+      restartPolicy: Never
+  backoffLimit: 4

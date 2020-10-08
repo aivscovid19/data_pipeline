@@ -41,7 +41,8 @@ def process_redis_queue(queue_name, host, builder):
     q = rediswq.RedisWQ(name=queue_name, host=host)
     print("Worker with sessionID: " +  q.sessionID())
     print("Initial queue state: empty=" + str(q.empty()))
-    while not q.empty():
+    #while not q.empty():
+    while True:
       item = q.lease(lease_secs=10, block=True, timeout=2) 
       if item is not None:
         itemstr = item.decode("utf-8")
@@ -52,7 +53,8 @@ def process_redis_queue(queue_name, host, builder):
         time.sleep(10) # Put your actual work here instead of sleep.
       else:
         print("Waiting for work")
-    print("Queue empty, exiting")
+        time.sleep(10)
+    #print("Queue empty, exiting")
 
 
 def main():
@@ -72,8 +74,8 @@ def main():
     project_id   = os.environ["PROJECT_ID"]
     url_table_id = os.environ["TABLE_ID"]
 
-    driver_path='/usr/lib/chromium-browser/chromedriver'
-    miner = mining.MiningEngine(ScieloSearchLocations, driver_path=driver_path)
+    #driver_path='/usr/lib/chromium-browser/chromedriver'
+    miner = mining.MiningEngine(ScieloSearchLocations)
     URLBuilder.connect_to_gbq(client, project_id, url_table_id, job_config)
     scielo_builder = URLBuilder(miner)
 
