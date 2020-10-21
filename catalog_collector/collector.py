@@ -91,7 +91,6 @@ class CatalogCollector():
         new_query['format'] = 'summary'
         new_query['fb'] = ''
         new_query['page'] = page_index
-        new_query['filter[in][]'] = 'scl'     # Filter results only in Brazilian Scielo
         # Rebuild the URL with queries
         new_url = parse.urlunparse(parsed_url._replace(query = parse.urlencode(new_query)))
         return f"{new_url}&q={parse.quote_plus(new_query['q'])}&lang={new_query['lang']}&page={page_index}"
