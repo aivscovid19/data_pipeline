@@ -19,11 +19,6 @@ assert None not in [mq_user, mq_pass, host_ip], "Include a .env file using the d
 
 credentials = pika.PlainCredentials(mq_user, mq_pass)
 
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host=host_ip, credentials=credentials))
-channel = connection.channel()
-
-channel.queue_declare(queue='task_queue', durable=True)
 
 statusTable = StatusTable().GetOrCreate()
 
@@ -32,31 +27,38 @@ try:
     while True:  # Use sigint to break the loop
         newData = statusTable.GetNewURLs()
 
-        for row in newData:
-            # Remove extra data that doesn't need to be sent
-            row.pop('timestamp')
-            row.pop('status')
+        if len(newData):
+            # Send data from BQ to rabbitMQ
+            connection = pika.BlockingConnection(
+                pika.ConnectionParameters(host=host_ip, credentials=credentials))
+            channel = connection.channel()
+            channel.queue_declare(queue='task_queue', durable=True)
+            for row in newData:
+                # Remove extra data that doesn't need to be sent
+                row.pop('timestamp')
+                row.pop('status')
 
-            request = json.dumps(row)
+                request = json.dumps(row)
 
-            # Send the data through to the rabbitMQ queue
-            channel.basic_publish(
-                exchange='',
-                routing_key='task_queue',
-                body=request,
-                properties=pika.BasicProperties(
-                    delivery_mode=2,  # make message persistent
-                ))
-            print(f" [x] Sent {request}", flush=True)
+                # Send the data through to the rabbitMQ queue
+                channel.basic_publish(
+                    exchange='',
+                    routing_key='task_queue',
+                    body=request,
+                    properties=pika.BasicProperties(
+                        delivery_mode=2,  # make message persistent
+                    ))
+                print(f" [x] Sent {request}", flush=True)
 
-            # Update the input row with a new timestamp and status, and add a row to the bq table
-            row['timestamp'] = datetime.utcnow()
-            row['status'] = "Sent to queue"
-            #errors = bq_client.insert_rows(
-            errors = statusTable.insert_row(row)
-            if errors != []:
-                print(f"We've got some errors when updating bq: {errors}", flush=True)
-        print(f"Sent {len(newData)} rows to rabbitMQ queue.", flush=True)
+                # Update the input row with a new timestamp and status, and add a row to the bq table
+                row['timestamp'] = datetime.utcnow()
+                row['status'] = "Sent to queue"
+                #errors = bq_client.insert_rows(
+                errors = statusTable.insert_row(row)
+                if errors != []:
+                    print(f"We've got some errors when updating bq: {errors}", flush=True)
+            connection.close()
+            print(f"Sent {len(newData)} rows to rabbitMQ queue.", flush=True)
 
         # Wait for the next loop
         time.sleep(DELAY)
@@ -64,4 +66,3 @@ except KeyboardInterrupt as e:
     print("ctrl+c caught - exiting", flush=True)
 except Exception as e:
     raise e
-connection.close()
