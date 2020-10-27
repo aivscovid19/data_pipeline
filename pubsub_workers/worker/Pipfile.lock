@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2cdf6919f291b828829c5c327d80883aeb283e0523d5c0be24bb9fe17551920c"
+            "sha256": "61a488ee6a47279da854cf9395d9d89c7e01371baf9c2a2fd224ef40999d16c0"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -109,6 +109,13 @@
                 "sha256:e73ad105c78935d71fe454dd4b85c5c437ba199294e7ffd3341842bc683654b1"
             ],
             "version": "==0.4.0"
+        },
+        "filelock": {
+            "hashes": [
+                "sha256:18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59",
+                "sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836"
+            ],
+            "version": "==3.0.12"
         },
         "google-api-core": {
             "extras": [
@@ -386,6 +393,13 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
             "version": "==2.24.0"
         },
+        "requests-file": {
+            "hashes": [
+                "sha256:07d74208d3389d01c38ab89ef403af0cfec63957d53a0081d8eca738d0247d8e",
+                "sha256:dfe5dae75c12481f68ba353183c53a65e6044c923e64c24b2209f6c7570ca953"
+            ],
+            "version": "==1.5.1"
+        },
         "rsa": {
             "hashes": [
                 "sha256:109ea5a66744dd859bf16fe904b8d8b627adafb9408753161e766a92e7d681fa",
@@ -408,6 +422,14 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.15.0"
+        },
+        "tldextract": {
+            "hashes": [
+                "sha256:d2762b1aa2a36857df8420d63c2c31706e4924da8773439a543365d38459afd8",
+                "sha256:f188eab8c90ff935f3fa49d9228049cd7f37fb47105c3f15f8e6dd6f6e25924a"
+            ],
+            "index": "pypi",
+            "version": "==3.0.2"
         },
         "typing-extensions": {
             "hashes": [
