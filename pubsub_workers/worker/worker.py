@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import json
-from urllib.parse import urlparse
+#from urllib.parse import urlparse
+import tldextract
 from datetime import datetime
 from google.cloud import pubsub_v1
 from tables import StatusTable, DataTable
@@ -11,7 +12,9 @@ dataTable = DataTable().GetOrCreate()
 
 
 def callback(message):
-    status = json.loads(message.decode("utf-8"))
+    print(type(message))
+    print(message.data.decode("utf-8"))
+    status = json.loads(message.data.decode("utf-8"))
     print(f"\n [x] Received {message}", flush=True)
 
     # Tell bq that we received the request
@@ -25,7 +28,8 @@ def callback(message):
     # Do the actual mining
     import miners
     print("getting article info from", status['article_url'], flush=True)
-    domain = urlparse(status['article_url']).netloc.split('.')[1]  # Get rid of the extension and subdomain
+    domain = tldextract.extract(status['article_url']).domain  # Get rid of the extension and subdomain
+    #domain = urlparse(status['article_url']).netloc.split('.')[0]  # Get rid of the extension and subdomain
     print("Using domain:", domain, flush=True)
     miner = getattr(miners, domain.lower(), None)
     if miner is None:
@@ -33,7 +37,7 @@ def callback(message):
         status['status'] = 'Failed'
         status['timestamp'] = datetime.utcnow()
         errors = statusTable.insert_row(status)
-        message.ack()
+        #message.ack()
         if errors != []:
             print(f"We've got some errors when updating bq: {errors}", flush=True)
         return
@@ -78,24 +82,39 @@ if __name__ == "__main__":
     # project_id = environ.get('PROJECT_ID')
     project_id = StatusTable.table_id.split('.')[0]
     subcription_ID = environ.get('PUBSUB_VERIFICATION_TOKEN')
+    #topic_ID = environ.get('PUBSUB_TOPIC')
 
     assert project_id is not None, "Include a .env file using the docker argument --env-file when running."
 
     print(' [*] Waiting for messages. To exit press CTRL+C', flush=True)
 
     # Create a subscriber
+    #publisher = pubsub_v1.PublisherClient()
     subscriber = pubsub_v1.SubscriberClient()
+    #topic_path = publisher.topic_path(project_id, topic_ID)
     subscription_path = subscriber.subscription_path(project_id, subcription_ID)
+
+
+    flow_control = pubsub_v1.types.FlowControl(max_messages=1)
+    #with subscriber:
+    #    subscription = subscriber.create_subscription(
+    #        request = {"name": subscription_path, "topic": topic_path}
+    #    )
+    #    print("subscribed", flush=True)
 
     # Subscribe
     streaming_pull_future = subscriber.subscribe(
         subscription_path,
-        callback=callback
+        callback=callback,
+        flow_control=flow_control
     )
     print(f"Listening for messages on {subscription_path}", flush=True)
 
     # Stop the thread from quitting until the job is finished
     try:
         streaming_pull_future.result()
-    except Exception:
+        print("result", flush=True)
+    except Exception as e:
+        print(e)
         streaming_pull_future.cancel()
+        print("cancel", flush=True)
