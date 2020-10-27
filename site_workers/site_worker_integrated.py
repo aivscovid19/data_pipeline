@@ -89,9 +89,7 @@ class SiteWorkerIntegrated():
       data.append(miner.results)
       if (count == self.max_threshold or count == limit or count == len(urls)):
         articles_list = list(filter(lambda i:
-                            i['authors'] != None and len(i['authors']) != 0 and
-                            i['date_publication'] != None and len(i['date_publication']) != 0 and
-                            i['title'] != None and len(i['title']) != 0,
+                            i['authors'] and i['date_publication'] and i['title'],
                             data[prev_count : count])) 
         articles_df = pd.DataFrame(articles_list)
         articles_df.to_gbq(destination_table=f'{self.article_table}',

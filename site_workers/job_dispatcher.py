@@ -19,6 +19,9 @@ class JobDispatcher():
     self.credentials = credentials
     self.project_id = project_id
     self.url_table = url_table
+    
+    # 'timestamp' field should be ```type:'DATETIME'```, bacause all ```url_builders``` use 'DATETIME' except Scielo.
+    # Since we are mining Scielo, this field has been changed to ```type:'TIMESTAMP'```
     self.url_schema = [
         {'name': 'article_url', 'type': 'STRING',   'mode': 'REQUIRED'},
         {'name': 'catalog_url', 'type': 'STRING',   'mode': 'REQUIRED'},
