@@ -9,6 +9,7 @@ verify_ssl = true
 google-cloud-bigquery = "*"
 pika = "*"
 centaurminer = "*"
+google-cloud-pubsub = "*"
 
 [requires]
 python_version = "3.8"
