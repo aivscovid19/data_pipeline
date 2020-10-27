@@ -75,7 +75,8 @@ if __name__ == "__main__":
     self_id = str(uuid.uuid1())  # Use uuid1 so the network ID is in the uuid, and we can trace it back to this machine.
 
     # extract environment variables
-    project_id = environ.get('PROJECT_ID')
+    # project_id = environ.get('PROJECT_ID')
+    project_id = StatusTable.table_id.split('.')[0]
     subcription_ID = environ.get('PUBSUB_VERIFICATION_TOKEN')
 
     assert project_id is not None, "Include a .env file using the docker argument --env-file when running."
