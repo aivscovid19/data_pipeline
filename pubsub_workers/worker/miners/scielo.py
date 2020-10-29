@@ -130,9 +130,21 @@ class ScieloEngine(mining.MiningEngine):
             String representing date publication, in format YYYY-MM-DD.
         """
         try:
-            return str((self.get(element).split('Epub')[1]).date())
+            date_str = str(self.get(element).split('Epub ')[1])
+            try:
+                date_obj = datetime.datetime.strptime(date_str, '%b %d, %Y')
+            except ValueError:
+                date_obj = datetime.datetime.strptime(date_str, '%B %d, %Y')          
+            return date_obj.strftime('%Y-%m-%d')
         except (AttributeError, IndexError):
+            element = mining.MetaData("citation_date")
+            return self.get(element).replace('/', '-')
+        except:
             return None
+        #try:
+        #    return str((self.get(element).split('Epub')[1]).date())
+        #except (AttributeError, IndexError):
+        #    return None
 
     def get_organization_affiliated(self, element):
         """Returns a string with article authors organizations, separated by HTML-like elements"""
