@@ -69,6 +69,7 @@ class BQTable:
         )
 
 class StatusTable(BQTable):
+    # TODO: change DATETIME to TIMESTAMP
     table_id = environ.get("STATUS_TABLE_ID")
     schema = [
         bigquery.SchemaField("article_url", "STRING",   mode = "REQUIRED"),
@@ -98,6 +99,7 @@ class StatusTable(BQTable):
 
 class DataTable(BQTable):
     table_id = environ.get("DATA_TABLE_ID")
+    # TODO: change DATETIME to TIMESTAMP
     schema = [
         bigquery.SchemaField("abstract",         "STRING",   mode = "REQUIRED"),
         bigquery.SchemaField("title",            "STRING",   mode = "REQUIRED"),
