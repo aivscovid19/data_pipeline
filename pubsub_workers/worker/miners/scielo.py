@@ -188,6 +188,10 @@ class ScieloEngine(mining.MiningEngine):
 def GetArticle(url):
     miner = ScieloEngine(ScieloLocations)
     miner.gather(url)
+
+    # Check for valid data
+    if miner.results is None:
+        return None
     
     # Mould results to match schema - move extra data to the meta_info column
     meta_info = {}
