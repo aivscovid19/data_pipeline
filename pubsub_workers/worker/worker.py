@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
     # extract environment variables
     # project_id = environ.get('PROJECT_ID')
-    project_id = StatusTable.table_id.split('.')[0]
+    project_id = DataTable.table_id.split('.')[0]
     subcription_ID = environ.get('PUBSUB_VERIFICATION_TOKEN')
     #topic_ID = environ.get('PUBSUB_TOPIC')
 
