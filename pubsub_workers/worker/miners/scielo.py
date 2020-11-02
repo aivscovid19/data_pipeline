@@ -189,20 +189,34 @@ def GetArticle(url):
     miner = ScieloEngine(ScieloLocations)
     miner.gather(url)
     
-    # Mould results to match schema
-    references = miner.results.pop('references')
-    keywords = miner.results.pop("keywords")
-    orgs = miner.results.pop("organization_affiliated")
-    license = miner.results.pop("license")
-    extra = miner.results.pop('extra_link')
+    # Mould results to match schema - move extra data to the meta_info column
+    meta_info = {}
+    try:
+        references = miner.results.pop('references')
+        meta_info['references'] = references
+    except Exception as e:
+        pass # Ignore this entry
+    try:
+        orgs = miner.results.pop("organization_affiliated")
+        meta_info['organization_affiliated'] = orgs
+    except Exception as e:
+        pass # Ignore this entry
+    try:
+        keywords = miner.results.pop("keywords")
+        meta_info['keywords'] = keywords
+    except Exception as e:
+        pass # Ignore this entry
+    try:
+        license = miner.results.pop("license")
+        meta_info['license'] = license
+    except Exception as e:
+        pass # Ignore this entry
+    try:
+        extra = miner.results.pop('extra_link')
+        meta_info['pdf_link'] = extra
+    except Exception as e:
+        pass # Ignore this entry
 
-    meta_info = {
-        "references": references,
-        "keywords": keywords,
-        "organization_affiliated": orgs,
-        "license": license,
-        "pdf_link": extra
-    }
     miner.results['meta_info'] = json.dumps(meta_info)
 
     return miner.results
