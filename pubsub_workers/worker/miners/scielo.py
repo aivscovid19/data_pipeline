@@ -191,31 +191,35 @@ def GetArticle(url):
     
     # Mould results to match schema - move extra data to the meta_info column
     meta_info = {}
-    try:
-        references = miner.results.pop('references')
-        meta_info['references'] = references
-    except Exception as e:
-        pass # Ignore this entry
-    try:
-        orgs = miner.results.pop("organization_affiliated")
-        meta_info['organization_affiliated'] = orgs
-    except Exception as e:
-        pass # Ignore this entry
-    try:
-        keywords = miner.results.pop("keywords")
-        meta_info['keywords'] = keywords
-    except Exception as e:
-        pass # Ignore this entry
-    try:
-        license = miner.results.pop("license")
-        meta_info['license'] = license
-    except Exception as e:
-        pass # Ignore this entry
-    try:
-        extra = miner.results.pop('extra_link')
-        meta_info['pdf_link'] = extra
-    except Exception as e:
-        pass # Ignore this entry
+    keys = ['references', 'organization_affiliated', 'keywords', 'license', 'extra_link']
+    for key in keys:
+        if miner.results.get(key) is not None: # key exists and is non-None
+            meta_info = miner.results.pop(key)
+    #try:
+    #    references = miner.results.pop('references')
+    #    meta_info['references'] = references
+    #except Exception as e:
+    #    pass # Ignore this entry
+    #try:
+    #    orgs = miner.results.pop("organization_affiliated")
+    #    meta_info['organization_affiliated'] = orgs
+    #except Exception as e:
+    #    pass # Ignore this entry
+    #try:
+    #    keywords = miner.results.pop("keywords")
+    #    meta_info['keywords'] = keywords
+    #except Exception as e:
+    #    pass # Ignore this entry
+    #try:
+    #    license = miner.results.pop("license")
+    #    meta_info['license'] = license
+    #except Exception as e:
+    #    pass # Ignore this entry
+    #try:
+    #    extra = miner.results.pop('extra_link')
+    #    meta_info['pdf_link'] = extra
+    #except Exception as e:
+    #    pass # Ignore this entry
 
     miner.results['meta_info'] = json.dumps(meta_info)
 
