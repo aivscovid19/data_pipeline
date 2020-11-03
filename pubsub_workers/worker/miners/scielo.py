@@ -138,7 +138,10 @@ class ScieloEngine(mining.MiningEngine):
             return date_obj.strftime('%Y-%m-%d')
         except (AttributeError, IndexError):
             element = mining.MetaData("citation_date")
-            return self.get(element).replace('/', '-')
+            try:
+                return self.get(element).replace('/', '-')
+            except Exception as e:
+                return None
         except:
             return None
         #try:
@@ -176,7 +179,7 @@ class ScieloEngine(mining.MiningEngine):
         """Retrieve mined information from a specific URL"""
         super().gather(url)
         self.results['acquisition_date'] = self.results.pop('date_aquisition')
-        self.results['date']             = self.results.pop('date_publication')
+        self.results['publication_date']             = self.results.pop('date_publication')
         #self.results['pdf_link']         = self.results.pop('extra_link')
         self.results['link']             = self.results.pop('url')
         if not self.results['abstract']:
@@ -199,31 +202,6 @@ def GetArticle(url):
     for key in keys:
         if miner.results.get(key) is not None: # key exists and is non-None
             meta_info = miner.results.pop(key)
-    #try:
-    #    references = miner.results.pop('references')
-    #    meta_info['references'] = references
-    #except Exception as e:
-    #    pass # Ignore this entry
-    #try:
-    #    orgs = miner.results.pop("organization_affiliated")
-    #    meta_info['organization_affiliated'] = orgs
-    #except Exception as e:
-    #    pass # Ignore this entry
-    #try:
-    #    keywords = miner.results.pop("keywords")
-    #    meta_info['keywords'] = keywords
-    #except Exception as e:
-    #    pass # Ignore this entry
-    #try:
-    #    license = miner.results.pop("license")
-    #    meta_info['license'] = license
-    #except Exception as e:
-    #    pass # Ignore this entry
-    #try:
-    #    extra = miner.results.pop('extra_link')
-    #    meta_info['pdf_link'] = extra
-    #except Exception as e:
-    #    pass # Ignore this entry
 
     miner.results['meta_info'] = json.dumps(meta_info)
 

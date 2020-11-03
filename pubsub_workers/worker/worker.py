@@ -28,8 +28,8 @@ def callback(message):
     # Do the actual mining
     import miners
     print("getting article info from", status['article_url'], flush=True)
-    domain = tldextract.extract(status['article_url']).domain  # Get rid of the extension and subdomain
-    #domain = urlparse(status['article_url']).netloc.split('.')[0]  # Get rid of the extension and subdomain
+    domain = tldextract.extract(status['catalog_url']).domain  # Get rid of the extension and subdomain
+    #domain = tldextract.extract(status['article_url']).domain  # Get rid of the extension and subdomain
     print("Using domain:", domain, flush=True)
     miner = getattr(miners, domain.lower(), None)
     if miner is None:
