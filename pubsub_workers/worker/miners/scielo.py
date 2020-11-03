@@ -139,7 +139,10 @@ class ScieloEngine(mining.MiningEngine):
         except (AttributeError, IndexError):
             element = mining.MetaData("citation_date")
             try:
-                return self.get(element).replace('/', '-')
+                # date in the format MM/YYYY
+                month, year = self.get(element).split('/')
+                return datetime.combine(datetime.date(year, month, 1), datetime.min.time())
+                #return self.get(element).replace('/', '-')
             except Exception as e:
                 return None
         except:
