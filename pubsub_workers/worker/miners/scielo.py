@@ -179,7 +179,7 @@ class ScieloEngine(mining.MiningEngine):
         """Retrieve mined information from a specific URL"""
         super().gather(url)
         self.results['acquisition_date'] = self.results.pop('date_aquisition')
-        self.results['publication_date']             = self.results.pop('date_publication')
+        self.results['publication_date'] = self.results.pop('date_publication')
         #self.results['pdf_link']         = self.results.pop('extra_link')
         self.results['link']             = self.results.pop('url')
         if not self.results['abstract']:
@@ -188,8 +188,10 @@ class ScieloEngine(mining.MiningEngine):
                 self.results = None
         pass
 
+# Static miner from this file
+miner = ScieloEngine(ScieloLocations)
+
 def GetArticle(url):
-    miner = ScieloEngine(ScieloLocations)
     miner.gather(url)
 
     # Check for valid data

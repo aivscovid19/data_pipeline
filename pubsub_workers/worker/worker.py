@@ -5,6 +5,7 @@ import tldextract
 from datetime import datetime
 from google.cloud import pubsub_v1
 from tables import StatusTable, DataTable
+import miners
 
 
 statusTable = StatusTable().GetOrCreate()
@@ -12,8 +13,6 @@ dataTable = DataTable().GetOrCreate()
 
 
 def callback(message):
-    print(type(message))
-    print(message.data.decode("utf-8"))
     status = json.loads(message.data.decode("utf-8"))
     print(f"\n [x] Received {message}", flush=True)
 
@@ -26,7 +25,6 @@ def callback(message):
         print(f"We've got some errors when updating bq: {errors}", flush=True)
 
     # Do the actual mining
-    import miners
     print("getting article info from", status['article_url'], flush=True)
     domain = tldextract.extract(status['catalog_url']).domain  # Get rid of the extension and subdomain
     #domain = tldextract.extract(status['article_url']).domain  # Get rid of the extension and subdomain
