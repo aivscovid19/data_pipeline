@@ -8,10 +8,10 @@ Original file is located at
 """
 
 # Installing Centaurminer chrome driver
-!pip install centaurMiner==0.1.0
+#!pip install centaurMiner==0.1.0
 # Colab only: This is normally done automatically
-!apt-get update # update ubuntu to correctly run apt-install
-!apt install chromium-chromedriver # Installs to '/usr/lib/chromium-browser/chromedriver'
+#!apt-get update # update ubuntu to correctly run apt-install
+#!apt install chromium-chromedriver # Installs to '/usr/lib/chromium-browser/chromedriver'
 import time
 import pandas_gbq
 import pandas as pd
@@ -20,6 +20,7 @@ from google.cloud import bigquery
 from google.oauth2 import service_account
 
 import centaurminer as mining
+import os
 
 class URL_builder():
   """
@@ -399,7 +400,11 @@ class pbmc_url(URL_builder):
     print('\n Total no. of URLS:'+str(len(self._url_list)))
     return self._url_schema
 
-URL_builder.connect_to_gbq('credentials.json','for-yr','Medical_Dataset.new')
+if __name__ == "__main__":
+    project_id   = os.environ["PROJECT_ID"]
+    url_table_id = os.environ["TABLE_ID"]
 
-url=URL_builder.urlbuilderfactory('pbmc','virus',1)
-url.get_urls()
+    URL_builder.connect_to_gbq('credentials.json',project_id, url_table_id)
+
+    url=URL_builder.urlbuilderfactory('pbmc','virus',1)
+    url.get_urls()
