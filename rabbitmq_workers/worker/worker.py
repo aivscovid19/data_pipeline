@@ -8,6 +8,7 @@ import uuid
 from datetime import datetime
 from google.cloud import bigquery
 from tables import StatusTable, DataTable
+import miners
 
 self_id = str(uuid.uuid1())  # Use uuid1 so the network ID is in the uuid, and we can trace it back to this machine.
 
@@ -55,7 +56,6 @@ def callback(ch, method, properties, body):
         print(f"We've got some errors when updating bq: {errors}", flush=True)
 
     # Do the actual mining
-    import miners
     print("getting article info from", status['article_url'], flush=True)
     #domain = status['catalog_url'].split(".")[0]
     domain = urlparse(status['article_url']).netloc.split('.')[1]  # Get rid of the extension and subdomain
