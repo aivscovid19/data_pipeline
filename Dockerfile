@@ -12,13 +12,15 @@ RUN curl -LO https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/c
     ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin
 
 COPY credentials.json .
-#COPY requirements.txt .
-#RUN pip install --user -r requirements.txt
+
 
 COPY url_builder_integration.py .
 
+ENV DOMAIN "pbmc"
 ENV PROJECT_ID "for-adrian"
 ENV TABLE_ID "urlbuilder.pbmc"
+ENV SEARCH_WORD "coronavirus"
+ENV LIMIT "100"
 
 ENV GOOGLE_APPLICATION_CREDENTIALS "credentials.json"
 
