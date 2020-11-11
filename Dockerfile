@@ -11,6 +11,8 @@ RUN curl -LO https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/c
     unzip chromedriver_linux64.zip -d /usr/lib/chromium-browser						&& \
     ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin
 
+RUN curl https://raw.githubusercontent.com/AdrianWR/urlbuilder/master/urlbuilder/urlbuilder.py > urlbuilder.py
+
 COPY credentials.json .
 
 
