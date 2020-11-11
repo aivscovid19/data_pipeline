@@ -69,7 +69,7 @@ class URL_builder():
             {'name': 'is_pdf',      'type': 'INTEGER',  'mode': 'REQUIRED'},
             {'name': 'language',    'type': 'STRING',                     },
             {'name': 'status',      'type': 'STRING',   'mode': 'REQUIRED'},
-            {'name': 'timestamp',   'type': 'DATETIME', 'mode': 'REQUIRED'},
+            {'name': 'timestamp',   'type': 'TIMESTAMP', 'mode': 'REQUIRED'},
             {'name': 'worker_id',   'type': 'STRING',                     },
             {'name': 'meta_info',   'type': 'STRING',                     },
     ]
