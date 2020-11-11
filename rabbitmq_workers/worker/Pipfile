@@ -9,6 +9,9 @@ verify_ssl = true
 google-cloud-bigquery = "*"
 pika = "*"
 centaurminer = "*"
+tldextract = "*"
+pandas = "*"
+tld = "*"
 
 [requires]
 python_version = "3.8"
