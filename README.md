@@ -50,18 +50,12 @@ $ docker build -t url_builder .
 Run the docker using your desired inputs:
 
 ```shell
-$ docker run -d --name URL_Builder                 \
-   
-    --env DOMAIN='arxiv'                            \
-    
-    --env PROJECT_ID='for-yr'                        \
-    
-    --env TABLE_ID='Medical_Dataset.arxiv_urls'      \
-    
-    --env SEARCH_WORD='coronavirus'                  \
-    
-    --env LIMIT=100                                   \
-    
+$ docker run -d --rm --name URL_Builder             \
+    --env DOMAIN='arxiv'                            \    
+    --env PROJECT_ID='for-yr'                        \    
+    --env TABLE_ID='Medical_Dataset.arxiv_urls'      \    
+    --env SEARCH_WORD='coronavirus'                  \    
+    --env LIMIT=100                                   \    
 	url_builder  
   ```
 
