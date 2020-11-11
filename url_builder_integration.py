@@ -7,17 +7,15 @@ Original file is located at
     https://colab.research.google.com/drive/1J17Kp-vGlOxUBAPkvMVKZd9rTl7rGVMq
 """
 
-# Installing Centaurminer chrome driver
-#!pip install centaurMiner==0.1.0
-# Colab only: This is normally done automatically
-#!apt-get update # update ubuntu to correctly run apt-install
-#!apt install chromium-chromedriver # Installs to '/usr/lib/chromium-browser/chromedriver'
 import time
 import pandas_gbq
 import pandas as pd
 from datetime import datetime
 from google.cloud import bigquery
 from google.oauth2 import service_account
+
+from urlbuilder import URLBuilder as ScieloURLBuilder
+from urlbuilder import ScieloSearchLocations
 
 import centaurminer as mining
 import os
@@ -61,8 +59,7 @@ class URL_builder():
               'biorxiv':f'https://www.biorxiv.org/search/{search_word}%20numresults%3A75%20sort%3Apublication-date%20direction%3Adescending?page='.format(search_word),
               'medrxiv':f'https://www.medrxiv.org/search/{search_word}%20numresults%3A75%20sort%3Apublication-date%20direction%3Adescending?page='.format(search_word),
               'preprint':f"https://www.preprints.org/search?search1={search_word}&field1=article_abstract&field2=authors&clause=AND&search2=&page_num=".format(search_word),
-              'pbmc':f'http://pbmc.ibmc.msk.ru/ru/search-ru/?search={search_word}&fn=5'.format(search_word),
-              'jamanetwork':f'https://jamanetwork.com/searchresults?q={search_word}&sort=Newest&page='.format(search_word)
+              'pbmc':f'http://pbmc.ibmc.msk.ru/ru/search-ru/?search={search_word}&fn=5'.format(search_word)
               }
 
 
@@ -124,6 +121,7 @@ class URL_builder():
                        'biorxiv':biorxiv_url(search_word,limit),
                        'medrxiv':medrxiv_url(search_word,limit),
                        'pbmc':pbmc_url(search_word,limit),
+                       'scielo':scielo_url(search_word,limit)
                        }
     return journaldictionary[journal_name]
 
@@ -220,7 +218,7 @@ class arxiv_url(URL_builder):
     '''
     for self.page_num in range(0,25*(99999),25):
       self.journal='arxiv'
-      print(f"\n Scraping from page {self.page_num}...", flush=True)
+      print(f"\n Scraping from page ...", flush=True)
       is_pdf = lambda x: pd.Series({'is_pdf': 1 if x.find('pdf') != -1 else 0}) 
       self._url_collector()
 
@@ -264,7 +262,7 @@ class preprint_url(URL_builder):
     '''
     self.journal='preprint'
     for self.page_num in range(1,99999):
-      print(f"\n Scraping from page {self.page_num}...", flush=True)
+      print(f"\n Scraping from page ...", flush=True)
       self._url_collector()
 
       [self.valid_urls.append(i) for i in self.urls]  
@@ -307,7 +305,7 @@ class biorxiv_url(URL_builder):
       Returns: url_schema
     '''
     for self.page_num in range(0,99999):
-      print(f"\n Scraping from page {self.page_num}...", flush=True)
+      print(f"\n Scraping from page ...", flush=True)
       self._url_collector()
 
       [self.valid_urls.append(i) for i in self.urls]  
@@ -348,7 +346,7 @@ class medrxiv_url(URL_builder):
       Returns: url_schema
     '''
     for self.page_num in range(0,99999):
-      print(f"\n Scraping from page {self.page_num}...", flush=True)
+      print(f"\n Scraping from page ...", flush=True)
       self._url_collector()
 
       [self.valid_urls.append(i) for i in self.urls]  
@@ -400,11 +398,46 @@ class pbmc_url(URL_builder):
     print('\n Total no. of URLS:'+str(len(self._url_list)))
     return self._url_schema
 
+
+
+class scielo_url(URL_builder):
+  """
+      Child class for getting URLs from preprint journal.
+      scielo: https://search.scielo.org/
+
+      Args:
+        search_word(str): word to be searched
+        limit(int): number of URLs to be collected
+  """
+
+  def __init__(self,search_word,limit):
+    super().__init__(search_word)
+    self.limit=limit
+
+  def get_urls(self):
+    '''
+      Method to get URLs and send url_schema to bigquery.
+
+      Returns: url_schema
+    '''
+    print(f"\n Scraping from page ...", flush=True)
+    miner = mining.MiningEngine(ScieloSearchLocations, driver_path=self._driver_path)
+    ScieloURLBuilder.connect_to_gbq(self.credentials, self.project_id, self.table_id, self._schema)
+    scielo_builder = ScieloURLBuilder(miner)
+    scielo_builder.collect('https://search.scielo.org/', self._search_word, self.limit)
+
+    
+    
+    
 if __name__ == "__main__":
+    domain       = os.environ["DOMAIN"]
     project_id   = os.environ["PROJECT_ID"]
     url_table_id = os.environ["TABLE_ID"]
+    search_item  = os.environ["SEARCH_WORD"]
+    limit        = os.environ["LIMIT"]
+    credentials  = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
 
-    URL_builder.connect_to_gbq('credentials.json',project_id, url_table_id)
+    URL_builder.connect_to_gbq(credentials,project_id, url_table_id)
 
-    url=URL_builder.urlbuilderfactory('pbmc','virus',1)
+    url=URL_builder.urlbuilderfactory(domain,search_item,limit)
     url.get_urls()
