@@ -59,7 +59,8 @@ class URL_builder():
               'biorxiv':f'https://www.biorxiv.org/search/{search_word}%20numresults%3A75%20sort%3Apublication-date%20direction%3Adescending?page='.format(search_word),
               'medrxiv':f'https://www.medrxiv.org/search/{search_word}%20numresults%3A75%20sort%3Apublication-date%20direction%3Adescending?page='.format(search_word),
               'preprint':f"https://www.preprints.org/search?search1={search_word}&field1=article_abstract&field2=authors&clause=AND&search2=&page_num=".format(search_word),
-              'pbmc':f'http://pbmc.ibmc.msk.ru/ru/search-ru/?search={search_word}&fn=5'.format(search_word)
+              'jamanetwork':f'https://jamanetwork.com/searchresults?q={search_word}&sort=Newest&page='.format(search_word),
+              'pbmc':f'http://pbmc.ibmc.msk.ru/ru/search-ru/?search={search_word}&fn=5'.format(search_word)             
               }
 
 
@@ -120,6 +121,7 @@ class URL_builder():
                        'preprint':preprint_url(search_word,limit),
                        'biorxiv':biorxiv_url(search_word,limit),
                        'medrxiv':medrxiv_url(search_word,limit),
+                       'jamanetwork': jamanetwork_url(search_word,limit),
                        'pbmc':pbmc_url(search_word,limit),
                        'scielo':scielo_url(search_word,limit)
                        }
@@ -162,7 +164,7 @@ class URL_builder():
     else:
       self._url_schema['is_pdf'] = self._url_schema['article_url'].apply(is_pdf)
     self._url_schema['language']=lang
-    self._url_schema['status']='not mined'
+    self._url_schema['status']='Not mined'
     self._url_schema['timestamp']= datetime.utcnow()
     self._url_schema['worker_id']=None
     self._url_schema['meta_info']=None
@@ -182,11 +184,28 @@ class URL_builder():
   
 
 
-  def get_urls(self,project_id,table_id):
+  def get_urls(self):
     '''
-      To be implemented by the corresponding subclasses
+      Method to get URLs and send url_schema to bigquery.
+
+      Returns: url_schema
     '''
-    raise NotImplementedError("Subclasses should implement this!")
+    for self.page_num in range(0,99999):
+      print(f"\n Scraping from page {self.page_num}...", flush=True)
+      self._url_collector()
+
+      [self.valid_urls.append(i) for i in self.urls]  
+      nums=min(self.limit - len(self.total_urls), len(self.valid_urls))
+      self.total_urls.extend(self.valid_urls[:nums])
+
+      self._url_list=[]
+      [self._url_list.append(i) for i in self.valid_urls[:nums]]
+      self._create_url_schema(self._url_list,self.page_url)
+      self._send_to_bigquery()
+      if len(self.total_urls) == self.limit:
+        break
+    print('\n Total no. of URLS:'+str(len(self._url_list)))
+    return self._url_schema
   
   
 
@@ -252,32 +271,8 @@ class preprint_url(URL_builder):
   def __init__(self,search_word,limit):
       super().__init__(search_word)  
       self.limit=limit
+      self.journal='preprint'
   
-  def get_urls(self):
-    '''
-      Method to get URLs and send url_schema to bigquery.
-
-      Returns: url_schema
-
-    '''
-    self.journal='preprint'
-    for self.page_num in range(1,99999):
-      print(f"\n Scraping from page ...", flush=True)
-      self._url_collector()
-
-      [self.valid_urls.append(i) for i in self.urls]  
-      nums=min(self.limit - len(self.total_urls), len(self.valid_urls))
-      self.total_urls.extend(self.valid_urls[:nums])
-
-      self._url_list=[]
-      [self._url_list.append(i) for i in self.valid_urls[:nums]]
-      self._create_url_schema(self._url_list,self.page_url)
-      self._send_to_bigquery()
-      if len(self.total_urls) == self.limit:
-        break
-      
-    print('\n Total no. of URLS:'+str(len(self._url_list)))
-    return self._url_schema
     
 
 
@@ -297,29 +292,7 @@ class biorxiv_url(URL_builder):
       self.limit=limit
       self.journal='biorxiv'
   
-  def get_urls(self):
-    '''
-      Method to get URLs and send url_schema to bigquery.
-
-
-      Returns: url_schema
-    '''
-    for self.page_num in range(0,99999):
-      print(f"\n Scraping from page ...", flush=True)
-      self._url_collector()
-
-      [self.valid_urls.append(i) for i in self.urls]  
-      nums=min(self.limit - len(self.total_urls), len(self.valid_urls))
-      self.total_urls.extend(self.valid_urls[:nums])
-
-      self._url_list=[]
-      [self._url_list.append(i) for i in self.valid_urls[:nums]]
-      self._create_url_schema(self._url_list,self.page_url)
-      self._send_to_bigquery()
-      if len(self.total_urls) == self.limit:
-        break
-    print('\n Total no. of URLS:'+str(len(self._url_list)))
-    return self._url_schema
+  
 
 
 
@@ -339,28 +312,23 @@ class medrxiv_url(URL_builder):
       self.limit=limit
       self.journal='medrxiv'
   
-  def get_urls(self):
-    '''
-      Method to get URLs and send url_schema to bigquery.
 
-      Returns: url_schema
-    '''
-    for self.page_num in range(0,99999):
-      print(f"\n Scraping from page ...", flush=True)
-      self._url_collector()
 
-      [self.valid_urls.append(i) for i in self.urls]  
-      nums=min(self.limit - len(self.total_urls), len(self.valid_urls))
-      self.total_urls.extend(self.valid_urls[:nums])
 
-      self._url_list=[]
-      [self._url_list.append(i) for i in self.valid_urls[:nums]]
-      self._create_url_schema(self._url_list,self.page_url)
-      self._send_to_bigquery()
-      if len(self.total_urls) == self.limit:
-        break
-    print('\n Total no. of URLS:'+str(len(self._url_list)))
-    return self._url_schema
+class jamanetwork_url(URL_builder):
+  """
+      Child class for getting URLs from preprint journal.
+      pbmc: https://jamanetwork.com/
+
+      Args:
+        search_word(str): word to be searched
+        limit(int): number of URLs to be collected
+  """
+
+  def __init__(self,search_word,limit):
+      super().__init__(search_word)  
+      self.limit=limit
+      self.journal = 'jamanetwork'
   
   
 
@@ -377,7 +345,8 @@ class pbmc_url(URL_builder):
 
   def __init__(self,search_word,limit):
     super().__init__(search_word)
-    self.limit=limit 
+    self.limit=limit
+    self.journal='pbmc'
   
   def get_urls(self):
     '''
@@ -386,7 +355,6 @@ class pbmc_url(URL_builder):
       Returns: url_schema
     '''
     self.page_num=None
-    self.journal='pbmc'
     print(f"\n Scraping from page...", flush=True)
     self._url_collector()
     [self.valid_urls.append(i) for i in self.urls if 'article-ru' in i]  
