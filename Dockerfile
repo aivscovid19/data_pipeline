@@ -1,5 +1,5 @@
-FROM python:3.6.12-buster AS compiler
-LABEL maintainer="adrian.w.roque@gmail.com"
+FROM python:3.8-buster AS compiler
+LABEL maintainer="yeshwanthreddy789@gmail.com"
 
 WORKDIR /usr/src/app
 ENV PATH=/root/.local/bin:$PATH
