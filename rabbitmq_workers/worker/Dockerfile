@@ -18,7 +18,6 @@ RUN pip install pipenv \
 # Copy custom data
 COPY worker/ .
 COPY tables/ tables/
-COPY CENTAURminer/centaurminer/ centaurminer/
 
 # python worker.py
 #CMD ['python', 'worker.py']
