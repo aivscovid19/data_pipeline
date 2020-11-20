@@ -20,13 +20,17 @@ The system is integrated with Docker.
 
 ## Installation:
 
-All you need to run these applications is the Docker environment set up and ready for container deployment. In this example, I'm assuming that the user has privileges on the docker group. If it doesn't, the best workaround is to check the Docker docs regarding this topic or execute all the following commands as superuser (sudo).
+Create an instance to run it on:
 
-This setup uses Redis as the caching database/message broker. Therefore, it's suggested to pull the Redis image from the DockerHub with
+Go to the VM instances page in your project and click on “Create Instance”. In here, make sure to change the following settings:
 
-```shell
- $ docker pull redis
-```
+- Change the name to something recognizable
+- Change the boot disk to “Container Optimized OS”
+- Change “Access Scopes” to either allow Bigquery specifically, or just “Allow full access”
+- Check the “Allow HTTP” and “Allow HTTPS” checkboxes
+
+Click “Create”.
+
 
 ## Working:
 
@@ -36,10 +40,15 @@ This container was tested only in Google Compute Engine VMs, so this should be a
 To start working on it, first clone the repository to your machine:
 
 ```shell
-$ git clone -b yeshwanth https://github.com/aivscovid19/data_pipeline.git
+$ git clone https://github.com/aivscovid19/data_pipeline.git
 ```
 
+Change to the Integrated_URL_builder folder:
 
+```shell
+$ cd data_pipeline/Integrated_URL_builder
+```
+**Store the google credentials file in Integrated_URL_builder folder.**
 
 Then, build the docker using the following command:
 
@@ -50,14 +59,18 @@ $ docker build -t url_builder .
 Run the docker using your desired inputs:
 
 ```shell
-$ docker run -d --rm --name URL_Builder             \
-    --env DOMAIN='arxiv'                            \    
+$ docker run -d --rm --name URL_Builder \ 
+--env DOMAIN='arxiv'                            \    
     --env PROJECT_ID='for-yr'                        \    
     --env TABLE_ID='Medical_Dataset.arxiv_urls'      \    
     --env SEARCH_WORD='coronavirus'                  \    
     --env LIMIT=100                                   \    
 	url_builder  
   ```
+
+docker run -d --rm --name
+ URL_Builder --env DOMAIN='arxiv' --env PROJECT_ID='for-yr' --env TABLE_ID='Medical_Dataset.arxiv_urls
+' --env SEARCH_WORD='coronavirus' --env LIMIT=100    url_builder
 
 DOMAIN: journal from which the URLs need to be scraped.
 
