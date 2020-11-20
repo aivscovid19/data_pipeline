@@ -48,7 +48,7 @@ Change to the Integrated_URL_builder folder:
 ```shell
 $ cd data_pipeline/Integrated_URL_builder
 ```
-**Store the google credentials file in Integrated_URL_builder folder. **
+#### Store the google credentials file in Integrated_URL_builder folder. 
 
 Then, build the docker using the following command:
 
