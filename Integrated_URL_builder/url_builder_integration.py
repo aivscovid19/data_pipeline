@@ -402,7 +402,7 @@ if __name__ == "__main__":
     project_id   = os.environ["PROJECT_ID"]
     url_table_id = os.environ["TABLE_ID"]
     search_item  = os.environ["SEARCH_WORD"]
-    limit        = os.environ["LIMIT"]
+    limit        = int(os.environ["LIMIT"])
     credentials  = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
 
     URL_builder.connect_to_gbq(credentials,project_id, url_table_id)
