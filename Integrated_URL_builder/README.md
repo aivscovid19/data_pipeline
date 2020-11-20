@@ -48,7 +48,7 @@ Change to the Integrated_URL_builder folder:
 ```shell
 $ cd data_pipeline/Integrated_URL_builder
 ```
-**Store the google credentials file in Integrated_URL_builder folder.**
+**Store the google credentials file in Integrated_URL_builder folder. **
 
 Then, build the docker using the following command:
 
@@ -67,10 +67,7 @@ $ docker run -d --rm --name URL_Builder \
     --env LIMIT=100                                   \    
 	url_builder  
   ```
-
-docker run -d --rm --name
- URL_Builder --env DOMAIN='arxiv' --env PROJECT_ID='for-yr' --env TABLE_ID='Medical_Dataset.arxiv_urls
-' --env SEARCH_WORD='coronavirus' --env LIMIT=100    url_builder
+  
 
 DOMAIN: journal from which the URLs need to be scraped.
 
