@@ -12,9 +12,9 @@ URL builder to collect URLs and push to Bigquery from different journals:
 
 [Preprints](https://www.preprints.org/)
 
-[pbmc](http://pbmc.ibmc.msk.ru/)
-
 [JAMA Network](https://jamanetwork.com/)
+
+[pbmc](http://pbmc.ibmc.msk.ru/)
 
 [SciELO](https://search.scielo.org/)
 
@@ -72,6 +72,7 @@ Run the docker using your desired inputs:
 ```shell  
 $  docker run -d --rm --name URL_Builder    --env DOMAIN='arxiv'    --env PROJECT_ID='for-yr'    --env TABLE_ID='Medical_Dataset.arxiv_urls'    --env SEARCH_WORD='coronavirus'  --env LIMIT=100  url_builder  
 ```
+
 DOMAIN: journal from which the URLs need to be scraped.
 
 Inputs: 
@@ -80,8 +81,8 @@ arxiv
 biorxiv
 medrxiv
 preprint
-pbmc
 jamanetwork
+pbmc
 scielo
 ```
 
@@ -93,7 +94,6 @@ SEARCH_WORD: keyword to be searched.
 
 LIMIT: number of URLs to be scraped.
 
-The credentials file must be set up accordingly on the corresponding directory, as credentials.json, and with read and write privileges to BigQuery.
 
 To check the logs while running the container:
 
