@@ -52,7 +52,7 @@ $ cd data_pipeline/Integrated_URL_builder
 
 To get the google credentials file:
 
-- Go the this [link]{https://console.cloud.google.com/apis/credentials/serviceaccountkey?_ga=2.258827587.814981471.1605932487-1580510446.1593694724}
+- Go the this [link](https://console.cloud.google.com/apis/credentials/serviceaccountkey?_ga=2.258827587.814981471.1605932487-1580510446.1593694724)
 - From the Service account list, select New service account.
 - In the Service account name field, enter a name.
 - From the Role list, select BigQuery > BigQuery Admin.
