@@ -48,7 +48,17 @@ Change to the Integrated_URL_builder folder:
 ```shell
 $ cd data_pipeline/Integrated_URL_builder
 ```
-#### Store the google credentials file in Integrated_URL_builder folder. 
+
+
+To get the google credentials file:
+
+- Go the this [link]{https://console.cloud.google.com/apis/credentials/serviceaccountkey?_ga=2.258827587.814981471.1605932487-1580510446.1593694724}
+- From the Service account list, select New service account.
+- In the Service account name field, enter a name.
+- From the Role list, select BigQuery > BigQuery Admin.
+- Click Create. A JSON file that contains your key downloads to your computer.
+
+#### Store the google credentials file in the Integrated_URL_builder folder. 
 
 Then, build the docker using the following command:
 
