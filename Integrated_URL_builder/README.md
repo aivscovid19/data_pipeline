@@ -14,6 +14,8 @@ URL builder to collect URLs and push to Bigquery from different journals:
 
 [pbmc](http://pbmc.ibmc.msk.ru/)
 
+[JAMA Network](https://jamanetwork.com/)
+
 [SciELO](https://search.scielo.org/)
 
 The system is integrated with Docker.
@@ -67,17 +69,9 @@ $ docker build -t url_builder .
 
 Run the docker using your desired inputs:
 
-```shell
-$ docker run -d --rm --name URL_Builder 			\ 
-    --env DOMAIN='arxiv'                            		\    
-    --env PROJECT_ID='for-yr'                        		\    
-    --env TABLE_ID='Medical_Dataset.arxiv_urls'      		\    
-    --env SEARCH_WORD='coronavirus'                 		\    
-    --env LIMIT=100                                   		\    
-	url_builder  
-  ```
-  
-
+```shell  
+$  docker run -d --rm --name URL_Builder    --env DOMAIN='arxiv'    --env PROJECT_ID='for-yr'    --env TABLE_ID='Medical_Dataset.arxiv_urls'    --env SEARCH_WORD='coronavirus'  --env LIMIT=100  url_builder  
+```
 DOMAIN: journal from which the URLs need to be scraped.
 
 Inputs: 
@@ -87,6 +81,7 @@ biorxiv
 medrxiv
 preprint
 pbmc
+jamanetwork
 scielo
 ```
 
