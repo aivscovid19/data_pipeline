@@ -21,6 +21,7 @@ The first steps comprises the Google Cloud Platform configuration and proper set
         --member="serviceAccount:<SERVICE_ACCOUNT_ID>@<PROJECT_ID>.iam.gserviceaccount.com"	\
         --role="roles/bigquery.dataOwner"
 
+These commands will create a new GCP project, create a service account to connect to your Google Bigquery dataset and define IAM roles to give access to read and write data on the Google Bigquery. It's advised to run this program with service accounts, but it's possible to use your own Google Cloud IAM credentials.
 
 # The URL Collector
 
