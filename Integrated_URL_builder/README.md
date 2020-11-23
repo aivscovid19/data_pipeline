@@ -65,16 +65,21 @@ After moving the file into the specified folder above, build the docker using th
 $ docker build -t url_builder .
 ```
 
-Once the docker is built, run the docker to fetch URLs and save it in bigquery, but before running the code below, please ensure that the PROJECT_ID env variable is changed to the PROJECT_ID you are using. Change the other env variables as you want; even if they are not changed, the docker will still run and save the results with the default env variable values in the code below.
+Once the docker is built, run the docker to fetch URLs and save it in bigquery, but before running the code below, please ensure that the PROJECT_ID env variable is changed to the PROJECT_ID you are using. Change the other env variables as you wish; even if they are not changed, the docker will still run and save the results with the default env variable values in the code below.
 
-```shell  
-$  docker run -d --rm --name URL_Builder    --env DOMAIN='arxiv'    --env PROJECT_ID='for-yr'    --env TABLE_ID='Medical_Dataset.arxiv_urls'    --env SEARCH_WORD='coronavirus'  --env LIMIT=100  url_builder  
+```shell
+$ docker run -d --rm --name URL_Builder \
+  --env DOMAIN='arxiv'   \
+  --env PROJECT_ID='for-yr'  \
+  --env TABLE_ID='Medical_Dataset.arxiv_urls'   \
+  --env SEARCH_WORD='coronavirus' \
+  --env LIMIT=100  \
+  url_builder 
 ```
 
+#### env variable inputs:
 
-env variable inputs:
-
-DOMAIN: journal from which the URLs need to be scraped.
+**DOMAIN**: journal from which the URLs need to be scraped.
 
 Inputs: 
 ```shell
@@ -87,14 +92,14 @@ pbmc
 scielo
 ```
 
-PROJECT_ID: Input your google cloud project_id.
+**PROJECT_ID**: Input your google cloud project_id.
 
-TABLE_ID: Input your google cloud DATASET and table_id to write the data into.
-          It'll be in the form: 'DATASET.table_id' Even if you didn't create a DATASET and a table_id in bigquery, they will automatically be created with the input names once             the above code snippet is ran.
+**TABLE_ID**: Input your google cloud DATASET and table_id to write the data into.
+          It'll be in the form: 'DATASET.table_id' Even if you didn't create a DATASET and a table in bigquery, they will automatically be created with the input names once               the above code snippet is ran.
 
-SEARCH_WORD: Input the keyword to be searched.
+**SEARCH_WORD**: Input the keyword to be searched.
 
-LIMIT: Input the number of URLs to be scraped.
+**LIMIT**: Input the number of URLs to be scraped.
 
 
 To check the logs while running the container:
@@ -103,4 +108,4 @@ To check the logs while running the container:
 $ docker logs URL_Builder
 ```
 
-The docker shows the logs until the URLs are being scraped. Once the scraping is done, running this command will throw an error stating there is no container running.
+The docker shows the logs until the URLs are being scraped. Once the scraping is done, running this command will throw an error stating that there is no container running.
