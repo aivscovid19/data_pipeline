@@ -68,7 +68,7 @@ $ docker run -d --rm --name URL_Builder \
   --env TABLE_ID='Medical_Dataset.arxiv_urls'   \
   --env SEARCH_WORD='coronavirus' \
   --env LIMIT=100  \
-  ---env TIME_FRAME=10\
+  --env TIME_FRAME=10\
   url_builder 
 ```
 
