@@ -47,22 +47,16 @@ Change to the Integrated_URL_builder folder:
 $ cd data_pipeline/Integrated_URL_builder
 ```
 
-
-To get the google credentials file:
-
-- Go to the service account page by clicking on this [link](https://console.cloud.google.com/apis/credentials/serviceaccountkey?_ga=2.258827587.814981471.1605932487-1580510446.1593694724).
-- From the Service account list, select New service account.
-- In the Service account name field, enter a name.
-- From the Role list, select BigQuery > BigQuery Admin.
-- Click Create.
-- A JSON file that contains your key will start downloading to your computer, save the file as credentials.json. 
-- Upload the credentials.json file into the VM instance.
-- Move the file into the data_pipeline/Integrated_URL_builder folder.
-
-After moving the file into the specified folder above, build the docker using the following command:
+Build the docker by running the below command:
 
 ```shell
 $ docker build -t url_builder .
+```
+
+If the docker is successfully built, the below statement will be printed:
+
+```shell
+Successfully tagged url_builder:latest
 ```
 
 Once the docker is built, run the docker to fetch URLs and save it in bigquery, but before running the code below, please ensure that the PROJECT_ID env variable is changed to the PROJECT_ID you are using. Change the other env variables as you wish; even if they are not changed, the docker will still run and save the results with the default env variable values in the code below.
@@ -74,6 +68,7 @@ $ docker run -d --rm --name URL_Builder \
   --env TABLE_ID='Medical_Dataset.arxiv_urls'   \
   --env SEARCH_WORD='coronavirus' \
   --env LIMIT=100  \
+  ---env TIME_FRAME=10\
   url_builder 
 ```
 
@@ -95,17 +90,19 @@ scielo
 **PROJECT_ID**: Input your google cloud project_id.
 
 **TABLE_ID**: Input your google cloud DATASET and table_id to write the data into.
-          It'll be in the form: 'DATASET.table_id' Even if you didn't create a DATASET and a table in bigquery, they will automatically be created with the input names once               the above code snippet is ran.
+
+It'll be in the form: 'DATASET.table_id' Even if you didn't create a DATASET and a table in bigquery, they will automatically be created with the input names once               the above code snippet is ran.
 
 **SEARCH_WORD**: Input the keyword to be searched.
 
 **LIMIT**: Input the number of URLs to be scraped.
 
+**TIME_FRAME**: Input the waiting time to send the each data_frame to bigquery.
 
-To check the logs while running the container:
+## To check the logs while running the container:
 
 ```shell
-$ docker logs URL_Builder
+$ docker logs -f URL_Builder
 ```
 
-The docker shows the logs until the URLs are being scraped. Once the scraping is done, running this command will throw an error stating that there is no container running.
+This command shows the continuous logs until the URLs are being scraped. 
