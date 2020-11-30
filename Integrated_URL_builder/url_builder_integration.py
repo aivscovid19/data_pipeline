@@ -174,9 +174,6 @@ class URL_builder():
   def get_urls(self):
     '''
       Method to get URLs and send url_schema to bigquery.
-
-      Returns: url_schema
-
     '''
     self.page_num=0
     start_time=time.time()
@@ -193,25 +190,19 @@ class URL_builder():
       self._create_url_schema(self._url_list,self.page_url)
     
 
-
-
       self.urls_dataframe = pd.concat([self.urls_dataframe,self._url_schema],ignore_index=True)
       if (time.time()-start_time)>=self.time_frame:
-        print(self.urls_dataframe)
+        print('\n Sending URLs to BigQuery')
         self._send_to_bigquery()
         self.urls_dataframe=pd.DataFrame()
         start_time=time.time()
         
-
-      
       if len(self.total_urls) == self.limit:
         break
       self.page_num+=1
 
     self._send_to_bigquery()
-    print(self.urls_dataframe)
-    print('\n Total no. of URLS sent:'+str(len(self._url_list)))
-    return self._url_schema
+    print('\n Total no. of URLS sent to BigQuery:'+str(len(self.total_urls)))
 
 
 
@@ -233,6 +224,7 @@ class arxiv_url(URL_builder):
         super().__init__(search_word)  
         self.limit=limit
         self.time_frame=time_frame
+        self.journal='arxiv'
   
 
   def get_urls(self):
@@ -244,8 +236,7 @@ class arxiv_url(URL_builder):
     '''
     self.page_num=0
     start_time=time.time()
-    while self.page_num>=0:
-      self.journal='arxiv'
+    while self.page_num>=0:    
       self.valid_urls=[]
       print(f"\n Scraping from page {self.page_num}...", flush=True)
       is_pdf = lambda x: pd.Series({'is_pdf': 1 if x.find('pdf') != -1 else 0}) 
@@ -261,8 +252,8 @@ class arxiv_url(URL_builder):
 
       self.urls_dataframe = pd.concat([self.urls_dataframe,self._url_schema],ignore_index=True)
       if (time.time()-start_time)>=self.time_frame:
+        print('\n Sending URLs to BigQuery')
         self._send_to_bigquery()
-        print(self.urls_dataframe)
         self.urls_dataframe=pd.DataFrame()
         start_time=time.time()
 
@@ -271,10 +262,8 @@ class arxiv_url(URL_builder):
       if len(self.total_urls) == self.limit:
         break
 
-  
     self._send_to_bigquery()
-    print('\n Total no. of URLS:'+str(len(self._url_list)))
-    return self._url_schema
+    print('\n Total no. of URLS sent to BigQuery:'+str(len(self.total_urls)))
 
 
 
@@ -334,9 +323,8 @@ class medrxiv_url(URL_builder):
   def __init__(self,search_word,limit,time_frame):
       super().__init__(search_word)  
       self.limit=limit
-      self.journal='medrxiv'
       self.time_frame=time_frame
-  
+      self.journal='medrxiv'  
 
 
 class jamanetwork_url(URL_builder):
@@ -353,8 +341,8 @@ class jamanetwork_url(URL_builder):
   def __init__(self,search_word,limit,time_frame):
       super().__init__(search_word)  
       self.limit=limit
-      self.journal = 'jamanetwork'
       self.time_frame=time_frame
+      self.journal = 'jamanetwork'
   
 
 class pbmc_url(URL_builder):
@@ -371,8 +359,9 @@ class pbmc_url(URL_builder):
   def __init__(self,search_word,limit,time_frame):
     super().__init__(search_word)
     self.limit=limit
-    self.journal='pbmc'
     self.time_frame=time_frame
+    self.journal='pbmc'
+    
   
   def get_urls(self):
     '''
@@ -389,9 +378,8 @@ class pbmc_url(URL_builder):
     [self._url_list.append(i) for i in self.valid_urls[:nums]]
     self._create_url_schema(self._url_list,self.page_url,lang='ru')
     self._send_to_bigquery()
-    print('\n Total no. of URLS:'+str(len(self._url_list)))
-    return self._url_schema
-
+    print('\n Total no. of URLS sent to BigQuery:'+str(len(self.total_urls)))
+    
 
 class scielo_url(URL_builder):
   """
