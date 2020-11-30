@@ -13,18 +13,15 @@ RUN curl -LO https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/c
 
 RUN curl https://raw.githubusercontent.com/AdrianWR/urlbuilder/master/urlbuilder/urlbuilder.py > urlbuilder.py
 
-COPY credentials.json .
-
 
 COPY url_builder_integration.py .
 
-ENV DOMAIN "pbmc"
-ENV PROJECT_ID "for-adrian"
-ENV TABLE_ID "urlbuilder.pbmc"
+ENV DOMAIN "arxiv"
+ENV PROJECT_ID "for-yr"
+ENV TABLE_ID "Medical_Dataset.urls"
 ENV SEARCH_WORD "coronavirus"
 ENV LIMIT "100"
-
-ENV GOOGLE_APPLICATION_CREDENTIALS "credentials.json"
+ENV TIME_FRAME "6"
 
 RUN pip install pandas_gbq
 RUN pip install centaurminer
