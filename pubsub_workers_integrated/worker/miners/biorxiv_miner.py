@@ -10,8 +10,6 @@ class BiorxivMiner:
     """
     Miner for https://www.biorxiv.org/
     """
-    def __init__(self):
-        pass
 
     class BiorxivLocations(mining.PageLocations):
         """ This is a class used to find the schema in the journal """

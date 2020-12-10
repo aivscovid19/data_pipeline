@@ -10,8 +10,6 @@ class PreprintsMiner:
     """
     Miner for https://preprints.org/
     """
-    def __init__(self):
-        pass
 
     class PreprintsLocations(mining.PageLocations):
         abstract = mining.MetaData("og:description")
