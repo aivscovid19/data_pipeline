@@ -197,7 +197,9 @@ class ScieloMiner:
                 String comprising keywords separated by HTML-like tags.
             """
             keys = self.__parse_keywords(self.get(element))
-            return mining.TagList(keys, "keyword")
+            if keys:
+                return mining.TagList(keys, "keyword")
+            return None
 
         def get_title_translated(self, element):
             """Returns a string with translated title/s if any, separated by HTML-like elements"""
