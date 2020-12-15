@@ -60,23 +60,6 @@ class ScieloMiner:
         ### Utilities Methods ###
         #########################
 
-        # @staticmethod
-        # def TagList(str_list, tag="item"):
-        #     """ Returns a string from a joined list with elements separated by HTML-like tags
-        #     Note:
-        #         This method is overwritting base class centaurminer.MiningEngine
-        #         default `CollectURLs` method.
-        #     Args:
-        #         str_list (list):     List of strings to be joined with HTML-like tags.
-        #         tag (str, optional): Tag used to separate the elements in the form <></>
-        #     Returns:
-        #         A string containing the list elements separated by HTML-like tags,
-        #         None if str_list is None or empty.
-        #     """
-        #     if str_list:
-        #         return ''.join(map(lambda s: f'<{tag}>{s.strip()}</{tag}>', str_list))
-        #     return None
-
         @staticmethod
         def __format_author(author):
             """Formats a single author entry in full name format."""
@@ -108,10 +91,6 @@ class ScieloMiner:
         # def get_id(self, element):
         #     """Return unique identifier for article ID."""
         #     return str(uuid.uuid4())
-
-        # def get_abstract(self, element):
-        #     """Fetch abstract information from article URL."""
-        #     return '\n'.join(self.get(element, several=True))
 
         def get_body(self, element):
             """Gather body text from article URL
