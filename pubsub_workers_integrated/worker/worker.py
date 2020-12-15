@@ -52,7 +52,8 @@ def callback(message):
             print(f"We've got some errors when updating bq: {errors}", flush=True)
         message.ack()
         return
-    data['language'] = status['language']  # Should always be true...
+    if not data['language']:
+        data['language'] = status['language']  # Should always be true...
     print("\nGot data:", flush=True)
     print(*data.items(), sep='\n', flush=True)
 
