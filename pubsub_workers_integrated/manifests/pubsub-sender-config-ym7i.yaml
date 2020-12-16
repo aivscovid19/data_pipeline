@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: pubsub-sender
+  name: pubsub-sender-config-ym7i
+  namespace: default
+data:
+  DELAY: "60"
+  GOOGLE_CLOUD_PROJECT: for-adrian
+  PUBSUB_TOPIC: url_distribution
+  PUBSUB_VERIFICATION_TOKEN: url_subscriber
+  STATUS_TABLE_ID: for-adrian.urls.cool_links

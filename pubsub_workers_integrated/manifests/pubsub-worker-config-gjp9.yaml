@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: pubsub-worker
+  name: pubsub-worker-config-gjp9
+  namespace: default
+data:
+  DATA_TABLE_ID: for-adrian.urls.data
+  GOOGLE_CLOUD_PROJECT: for-adrian
+  PUBSUB_TOPIC: url_distribution
+  PUBSUB_VERIFICATION_TOKEN: url_subscriber
+  STATUS_TABLE_ID: for-adrian.urls.cool_links
