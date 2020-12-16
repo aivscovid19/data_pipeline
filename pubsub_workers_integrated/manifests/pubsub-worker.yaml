@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pubsub-worker
+  name: pubsub-worker
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: pubsub-worker
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: pubsub-worker
+    spec:
+      containers:
+      - env:
+        - name: PUBSUB_VERIFICATION_TOKEN
+          valueFrom:
+            configMapKeyRef:
+              key: PUBSUB_VERIFICATION_TOKEN
+              name: pubsub-worker-config-gjp9
+        - name: PUBSUB_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              key: PUBSUB_TOPIC
+              name: pubsub-worker-config-gjp9
+        - name: GOOGLE_CLOUD_PROJECT
+          valueFrom:
+            configMapKeyRef:
+              key: GOOGLE_CLOUD_PROJECT
+              name: pubsub-worker-config-gjp9
+        - name: STATUS_TABLE_ID
+          valueFrom:
+            configMapKeyRef:
+              key: STATUS_TABLE_ID
+              name: pubsub-worker-config-gjp9
+        - name: DATA_TABLE_ID
+          valueFrom:
+            configMapKeyRef:
+              key: DATA_TABLE_ID
+              name: pubsub-worker-config-gjp9
+        image: gcr.io/for-adrian/pubsub-worker@sha256:d05df8319eb552effbdbe2d630ac129c38a4d30fe821907ce2593d050bdfcaf2
+        imagePullPolicy: IfNotPresent
+        name: pubsub-worker-sha256-1
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
