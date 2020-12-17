@@ -10,8 +10,6 @@ class IbmcRuMiner:
     """
     Miner for http://pbmc.ibmc.msk.ru/
     """
-    def __init__(self):
-        pass
 
     class IbmcLocations(mining.PageLocations):
         """

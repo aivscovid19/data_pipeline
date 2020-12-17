@@ -46,7 +46,8 @@ class SiteWorkerIntegrated:
         site_worker = self.site_worker_factory(domain, url, self.driver_path)
         return site_worker.scrape_articles()
 
-    def scrape_data(self, miner, url):
+    @staticmethod
+    def scrape_data(miner, url):
         """
         Scrapes data given urls' dataframe, and limit of articles to scrape.
         Uploads data to a given BigQuery table and calls `update_job_status` method
@@ -77,16 +78,20 @@ class SiteWorkerIntegrated:
             # into a datetime object (at midnight)
             "acquisition_date": datetime.combine(date(*[int(x) for x in miner.results['date_aquisition'].split("-")]), time),
         }
-        # if miner.results['date_publication'] is not None:
-        #    data["publication_date"] = datetime.combine(date(*[int(x) for x in miner.results['date_publication'].split("-")]), time)
 
         # Add the meta info
         meta_info = {
-            "references:": miner.results['references'],
+            "references": miner.results['references'],
             "search_keyword": miner.results['search_keyword'],
             "license": miner.results['license'],
             "extra_link": miner.results['extra_link']
         }
+
+        # Scielo specific meta-info
+        if miner.results['title_translated']:
+            meta_info['title_translated'] = miner.results['title_translated']
+        if miner.results['abstract_translated']:
+            meta_info['abstract_translated'] = miner.results['abstract_translated']
 
         data['meta_info'] = json.dumps(meta_info)
         return data

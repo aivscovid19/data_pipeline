@@ -10,8 +10,6 @@ class ArxivMiner:
     """
     Miner for https://arxiv.org/
     """
-    def __init__(self):
-        pass
 
     class ArxivLocations(mining.PageLocations):
         """
