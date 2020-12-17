@@ -36,6 +36,42 @@ docker build -t pubsub_sender -f sender/Dockerfile .
 docker run --rm -d --env-file .env pubsub_sender
 ```
 
+## Setup - Google Kubernetes Engine
+
+The Kubernetes way to deploy the mining system folows the same fashion as the containers isolated, at least until some point. First of all, we need to build the Dokcer images as we did in an isolated environment.
+
+```
+docker build -t pubsub_sender -f sender/Dockerfile .
+docker build -t pubsub_worker -f worker/Dockerfile .
+```
+
+After building the images, it's required to tag and upload the images to the Google Container Registry. The whole process may be found at GCP documentation, but here's a summary with the main instructions. **Be careful:** You must set Google Storage permissions to upload images to the Container Registry. This can be set with Cloud API permissions on a Google Compute Engine instance. For more information regarding this issue, look for the GCP docs.
+
+```
+docker tag pubsub_sender gcr.io/<PROJECT-ID>/pubsub_sender:latest
+docker tag pubsub_worker gcr.io/<PROJECT-ID>/pubsub_worker:latest
+docker push gcr.io/<PROJECT-ID>/pubsub_sender:latest
+docker push gcr.io/<PROJECT-ID>/pubsub_worker:latest
+```
+
+Let's move on to the GKE setup on itself. We are going to use the `gcloud` CLI utility tool, which can be installed on your local machine or a GCE instance, or directly from the GCP console Cloud Shell. First, we're going to set up a basic GCP configuration. Right after this, we create a ew GKE cluster with 3 nodes and get its credentials; that way, we bind the cluster credentials to our `kubectl` CLI tool.
+
+```
+gcloud config set project <PROJECT-ID>
+gcloud config set compute/zone <COMPUTE-ZONE>
+gcloud container clusters create <CLUSTER-NAME> --num-nodes=3
+gcloud container clusters get-credentials <CLUSTER-NAME>
+```
+
+At this point, it's required to change the values of **environment variables** and the GCR container path on the YAML files. Finally, we are ready to deploy. At the beginning, we'll deploy the ConfigMaps. Right after it, we may apply the Deployments.
+
+```
+kubectl apply -f ./manifests/pubsub-sender-config-ym7i.yaml
+kubectl apply -f ./manifests/pubsub-worker-config-gjp9.yaml
+kubectl apply -f ./manifests/pubsub-sender.yaml
+kubectl apply -f ./manifests/pubsub-worker.yaml
+``` 
+
 ## Adding Miners
 When you eventually add miners to this container network, you'll do so by adding your miner python file to worker/miners/. Then update worker/miners/__init__.py to import your module, and look at the example (worker/miners/arxiv.py) to see what functions you need and how to set them up. Namely, you need the `GetArticle(url)` function, which returns a dictionary of the data in the article. I recommend you use centaurminer to collect the data, since it keeps the scraping process pretty simple. But remember if you do, that you may need to do some reworking of the data after it's mined (like is done in [arxiv.py](worker/miners/arxiv.py)) to mold the data from the article to align with the schema of the data table, and to get dates in a proper format.
 
