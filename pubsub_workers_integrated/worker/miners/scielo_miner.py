@@ -1,6 +1,6 @@
 """
 Scielo miner by Adrian R.
-Edited by Gulnoza Kh. on 2020-12-10
+Edited by Gulnoza Kh. on 2020-12-17
 """
 
 import centaurminer as mining
@@ -161,7 +161,7 @@ class ScieloMiner:
             """Returns a string with article references, separated by HTML-like elements"""
             reflist = self.get(element, several=True)
             refs = [r.replace('[ Links ]', '').strip('0123456789. ') for r in reflist]
-            return mining.TagList(refs, "reference")
+            return refs
 
         def get_authors(self, element):
             """Returns a string with article authors from search engine, separated by HTML-like elements"""
@@ -181,13 +181,13 @@ class ScieloMiner:
             return None
 
         def get_title_translated(self, element):
-            """Returns a string with translated title/s if any, separated by HTML-like elements"""
-            return mining.TagList(self.get(element, several=True), tag='title_translated')
+            """Returns a string with translated title/s"""
+            return self.get(element, several=True)
 
         def get_abstract_translated(self, element):
-            """Returns a string with translated abstract/s if any, separated by HTML-like elements"""
-            return mining.TagList(self.get(element, several=True), tag='abstract_translated')
+            """Returns a string with translated abstract/s"""
+            return self.get(element, several=True)
 
         def get_extra_link(self, element):
-            """Returns a string with link to pdf/s if any, separated by HTML-like elements"""
-            return mining.TagList(self.get(element, several=True), tag='pdf_link')
+            """Returns a string with link to pdf/s"""
+            return self.get(element, several=True)
