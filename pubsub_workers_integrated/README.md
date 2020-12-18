@@ -15,6 +15,7 @@ Copy this repo into your VM using:
 
 ```shell
 git clone -b simon https://github.com/aivscovid19/data_pipeline.git
+cd pubsub_worker_integrated
 ```
 
 ## Starting the Containers
@@ -41,6 +42,7 @@ docker run --rm -d --env-file .env pubsub_sender
 The Kubernetes way to deploy the mining system folows the same fashion as the containers isolated, at least until some point. First of all, we need to build the Dokcer images as we did in an isolated environment.
 
 ```
+cd pubsub_workers_integrated
 docker build -t pubsub_sender -f sender/Dockerfile .
 docker build -t pubsub_worker -f worker/Dockerfile .
 ```
@@ -54,7 +56,7 @@ docker push gcr.io/<PROJECT-ID>/pubsub_sender:latest
 docker push gcr.io/<PROJECT-ID>/pubsub_worker:latest
 ```
 
-Let's move on to the GKE setup on itself. We are going to use the `gcloud` CLI utility tool, which can be installed on your local machine or a GCE instance, or directly from the GCP console Cloud Shell. First, we're going to set up a basic GCP configuration. Right after this, we create a ew GKE cluster with 3 nodes and get its credentials; that way, we bind the cluster credentials to our `kubectl` CLI tool.
+Let's move on to the GKE setup on itself. We are going to use the `gcloud` CLI utility tool, which can be installed on your local machine or a GCE instance, or directly from the GCP console Cloud Shell. First, we're going to set up a basic GCP configuration. Right after this, we create a new GKE cluster with 3 nodes and get its credentials; that way, we bind the cluster credentials to our `kubectl` CLI tool.
 
 ```
 gcloud config set project <PROJECT-ID>
