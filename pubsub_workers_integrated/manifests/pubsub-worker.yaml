@@ -50,6 +50,7 @@ spec:
             configMapKeyRef:
               key: DATA_TABLE_ID
               name: pubsub-worker-config-gjp9
+        # Change here to include your Container URL to pull
         image: gcr.io/for-adrian/pubsub-worker@sha256:d05df8319eb552effbdbe2d630ac129c38a4d30fe821907ce2593d050bdfcaf2
         imagePullPolicy: IfNotPresent
         name: pubsub-worker-sha256-1

@@ -14,7 +14,7 @@ When setting up a VM, make sure to change the **Access Scopes** to either "Allow
 Copy this repo into your VM using:
 
 ```shell
-git clone -b simon https://github.com/aivscovid19/data_pipeline.git
+git clone -b feature/k8s https://github.com/aivscovid19/data_pipeline.git
 cd pubsub_worker_integrated
 ```
 

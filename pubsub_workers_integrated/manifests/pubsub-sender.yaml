@@ -50,6 +50,7 @@ spec:
             configMapKeyRef:
               key: DELAY
               name: pubsub-sender-config-ym7i
+        # Change here to include your Container URL to pull
         image: gcr.io/for-adrian/pubsub-sender@sha256:e5c848d2d01d52628257a8d12f087525fd72a3dff3a0686399d22ab36ab2fd6e
         imagePullPolicy: IfNotPresent
         name: pubsub-sender-sha256-1
