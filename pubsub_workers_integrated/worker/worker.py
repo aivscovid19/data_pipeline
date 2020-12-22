@@ -20,7 +20,7 @@ def callback(message):
     # Tell bq that we received the request
     print(status, flush=True)
     status['status'] = 'Started Mining'
-    status['timestamp'] = datetime.now(timezone.utc).date()
+    status['timestamp'] = datetime.now(timezone.utc)
     #status['timestamp'] = datetime.utcnow()
     status['worker_id'] = self_id
     errors = statusTable.insert_row(status)
@@ -49,7 +49,7 @@ def callback(message):
         print("Mining failed.", flush=True)
         status['status'] = 'Failed'
         #status['timestamp'] = datetime.utcnow()
-        status['timestamp'] = datetime.now(timezone.utc).date()
+        status['timestamp'] = datetime.now(timezone.utc)
         errors = statusTable.insert_row(status)
         #message.ack()
         message.nack()
@@ -62,7 +62,7 @@ def callback(message):
         print("Mining returned no results.", flush=True)
         status['status'] = "No results"
         #status['timestamp'] = datetime.utcnow()
-        status['timestamp'] = datetime.now(timezone.utc).date()
+        status['timestamp'] = datetime.now(timezone.utc)
         errors = statusTable.insert_row(status)
         if errors != []:
             print(f"We've got some errors when updating bq: {errors}", flush=True)
@@ -81,7 +81,7 @@ def callback(message):
     # Send an update to bq that we're done
     status['status'] = 'Finished Mining'
     #status['timestamp'] = datetime.utcnow()
-    status['timestamp'] = datetime.now(timezone.utc).date()
+    status['timestamp'] = datetime.now(timezone.utc)
     errors = statusTable.insert_row(status)
     if errors != []:
         print(f"We've got some errors when updating bq: {errors}", flush=True)
