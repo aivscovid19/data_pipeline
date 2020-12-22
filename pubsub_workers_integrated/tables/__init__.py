@@ -15,29 +15,47 @@ class BQTable:
 
         Updates self.table_id if any arguments are supplied.
         '''
-        #table_id = environ.get("TABLE_ID").split(".")
         table_id = self.table_id.split(".")
         
         # Overwrite from arguments
         if project_id is not None:
             table_id[0] = project_id
-        else:
-            project_id = table_id[0]
+
         if dataset_id is not None:
             table_id[1] = dataset_id
+        
         if table_name is not None:
             table_id[2] = table_name
 
+        # Save the possibly-updated table information
+        project_id, dataset_id, table_name = table_id
         self.table_id = ".".join(table_id)
 
-        _table = bigquery.Table(self.table_id, schema = self.schema)
         self._client = bigquery.Client(project_id)
 
-        try:
-            self._table = self._client.get_table(_table)
-        except NotFound as e:
-            print(f"Creating table {table_id}.", flush=True)
-            self._table = self._client.create_table(_table)
+        # Check to see if the dataset already exists, or if it should be created
+        _dataset = None
+        for bq_dataset in self._client.list_datasets():
+            if bq_dataset.dataset_id == dataset_id:
+                _dataset = self._client.get_dataset(bq_dataset.reference)
+                break
+
+        if _dataset is None:  # Dataset not found
+            _dataset = bigquery.Dataset(f"{project_id}.{dataset_id}")
+            _dataset.location = "US" # Not sure if this is necessary
+            self._client.create_dataset(_dataset, timeout=30)
+            print(f"Created dataset {self._client.project}.{_dataset.dataset_id}")
+
+        # Check if this table exists, or if it should be created
+        self._table = None
+        for bq_table in self._client.list_tables(_dataset):
+            if bq_table.table_id == table_name:
+                self._table = self._client.get_table(bq_table.reference)
+
+        if self._table is None: # Table not found
+            _table = bigquery.Table(self.table_id, schema = self.schema)
+            self._table = self._client.create_table(_table, timeout=30)
+            print(f"Created table {self.table_id}", flush=True)
 
         return self
 
@@ -77,7 +95,7 @@ class StatusTable(BQTable):
         bigquery.SchemaField("is_pdf",      "INTEGER",  mode = "REQUIRED"),
         bigquery.SchemaField("language",    "STRING"                     ),
         bigquery.SchemaField("status",      "STRING",   mode = "REQUIRED"),
-        bigquery.SchemaField("timestamp",   "DATETIME", mode = "REQUIRED"),
+        bigquery.SchemaField("timestamp",   "DATE",     mode = "REQUIRED"),
         bigquery.SchemaField("worker_id",   "STRING"                     ),
         bigquery.SchemaField("meta_info",   "STRING"                     )
     ]
@@ -106,8 +124,8 @@ class DataTable(BQTable):
         bigquery.SchemaField("authors",          "STRING",   mode = "REQUIRED"),
         bigquery.SchemaField("language",         "STRING",   mode = "REQUIRED"),
         bigquery.SchemaField("doi",              "STRING"                     ),
-        bigquery.SchemaField("acquisition_date", "DATETIME", mode = "REQUIRED"),
-        bigquery.SchemaField("publication_date", "DATETIME"                   ),
+        bigquery.SchemaField("acquisition_date", "DATE",     mode = "REQUIRED"),
+        bigquery.SchemaField("publication_date", "DATE"                       ),
         bigquery.SchemaField("link",             "STRING",   mode = "REQUIRED"),
         bigquery.SchemaField("source",           "STRING",   mode = "REQUIRED"),
         bigquery.SchemaField("meta_info",        "STRING"                     ),
