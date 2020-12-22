@@ -95,7 +95,7 @@ class StatusTable(BQTable):
         bigquery.SchemaField("is_pdf",      "INTEGER",  mode = "REQUIRED"),
         bigquery.SchemaField("language",    "STRING"                     ),
         bigquery.SchemaField("status",      "STRING",   mode = "REQUIRED"),
-        bigquery.SchemaField("timestamp",   "DATE",     mode = "REQUIRED"),
+        bigquery.SchemaField("timestamp",   "DATETIME", mode = "REQUIRED"),
         bigquery.SchemaField("worker_id",   "STRING"                     ),
         bigquery.SchemaField("meta_info",   "STRING"                     )
     ]
@@ -124,7 +124,7 @@ class DataTable(BQTable):
         bigquery.SchemaField("authors",          "STRING",   mode = "REQUIRED"),
         bigquery.SchemaField("language",         "STRING",   mode = "REQUIRED"),
         bigquery.SchemaField("doi",              "STRING"                     ),
-        bigquery.SchemaField("acquisition_date", "DATE",     mode = "REQUIRED"),
+        bigquery.SchemaField("acquisition_date", "DATETIME", mode = "REQUIRED"),
         bigquery.SchemaField("publication_date", "DATE"                       ),
         bigquery.SchemaField("link",             "STRING",   mode = "REQUIRED"),
         bigquery.SchemaField("source",           "STRING",   mode = "REQUIRED"),
