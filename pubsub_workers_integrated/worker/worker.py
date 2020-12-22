@@ -21,7 +21,6 @@ def callback(message):
     print(status, flush=True)
     status['status'] = 'Started Mining'
     status['timestamp'] = datetime.now(timezone.utc)
-    #status['timestamp'] = datetime.utcnow()
     status['worker_id'] = self_id
     errors = statusTable.insert_row(status)
     if errors != []:
@@ -30,28 +29,15 @@ def callback(message):
     # Do the actual mining
     print("getting article info from", status['article_url'], flush=True)
     domain = tldextract.extract(status['catalog_url']).domain  # Get rid of the extension and subdomain
-    # domain = tldextract.extract(status['article_url']).domain  # Get rid of the extension and subdomain
     print("Using domain:", domain, flush=True)
-#    miner = getattr(miners, domain.lower(), None)
-#    if miner is None:
-#        print("Mining failed.", flush=True)
-#        status['status'] = 'Failed'
-#        status['timestamp'] = datetime.utcnow()
-#        errors = statusTable.insert_row(status)
-#        #message.ack()
-#        if errors != []:
-#            print(f"We've got some errors when updating bq: {errors}", flush=True)
-#        return
-#   data = miner.GetArticle(status['article_url'])
+
     try:
         data = SiteWorkerIntegrated().send_request(status['article_url'])
     except MinerNotFoundError:
         print("Mining failed.", flush=True)
         status['status'] = 'Failed'
-        #status['timestamp'] = datetime.utcnow()
         status['timestamp'] = datetime.now(timezone.utc)
         errors = statusTable.insert_row(status)
-        #message.ack()
         message.nack()
         if errors != []:
             print(f"We've got some errors when updating bq: {errors}", flush=True)
