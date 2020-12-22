@@ -66,7 +66,6 @@ def callback(message):
 
     # Send an update to bq that we're done
     status['status'] = 'Finished Mining'
-    #status['timestamp'] = datetime.utcnow()
     status['timestamp'] = datetime.now(timezone.utc)
     errors = statusTable.insert_row(status)
     if errors != []:
