@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from google.cloud import pubsub_v1
 from tables import StatusTable, DataTable
 from site_worker_integrated import SiteWorkerIntegrated, MinerNotFoundError
+from selenium.common.exceptions import WebDriverException
 
 statusTable = StatusTable().GetOrCreate()
 dataTable = DataTable().GetOrCreate()
@@ -25,16 +26,16 @@ def callback(message):
     errors = statusTable.insert_row(status)
     if errors != []:
         print(f"We've got some errors when updating bq: {errors}", flush=True)
+        message.nack()
+        return
 
     # Do the actual mining
     print("getting article info from", status['article_url'], flush=True)
-    domain = tldextract.extract(status['catalog_url']).domain  # Get rid of the extension and subdomain
-    print("Using domain:", domain, flush=True)
-
     try:
         data = SiteWorkerIntegrated().send_request(status['article_url'])
-    except MinerNotFoundError:
+    except MinerNotFoundError as e:
         print("Mining failed.", flush=True)
+        print(e, flush=True)
         status['status'] = 'Failed'
         status['timestamp'] = datetime.now(timezone.utc)
         errors = statusTable.insert_row(status)
@@ -42,6 +43,16 @@ def callback(message):
         if errors != []:
             print(f"We've got some errors when updating bq: {errors}", flush=True)
         return
+    except WebDriverException as e:  # Handle webdriver timeouts
+        print(e, flush=True)
+        status['status'] = 'Failed'
+        status['timestamp'] = datetime.now(timezone.utc)
+        errors = statusTable.insert_row(status)
+        message.nack()
+        if errors != []:
+            print(f"We've got some errors when updating bq: {errors}", flush=True)
+        return
+        
         
     print(data)
     if data is None:
@@ -51,6 +62,8 @@ def callback(message):
         errors = statusTable.insert_row(status)
         if errors != []:
             print(f"We've got some errors when updating bq: {errors}", flush=True)
+            message.nack()
+            return
         message.ack()
         return
     if 'language' not in data:
@@ -69,6 +82,8 @@ def callback(message):
     errors = statusTable.insert_row(status)
     if errors != []:
         print(f"We've got some errors when updating bq: {errors}", flush=True)
+        message.nack()
+        return
 
     print(" [x] Done", flush=True)
     print(' [*] Waiting for messages. To exit press CTRL+C', flush=True)
@@ -105,7 +120,7 @@ if __name__ == "__main__":
 
     # Stop the thread from quitting until the job is finished
     try:
-        streaming_pull_future.result(timeout=60)
+        streaming_pull_future.result()
         print("result", flush=True)
     except Exception as e:
         print(e, flush=True)

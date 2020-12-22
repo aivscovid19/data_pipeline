@@ -107,6 +107,7 @@ class SiteWorkerIntegrated:
                        'biorxiv.org': BiorxivSiteWorker(url, driver_path),
                        'medrxiv.org': MedrxivSiteWorker(url, driver_path),
                        'scielo.br': ScieloSiteWorker(url, driver_path),
+                       'sld.cu': ScieloSiteWorker(url, driver_path),
                        'preprints.org': PreprintsSiteWorker(url, driver_path)
                        }
         try:

@@ -160,7 +160,7 @@ class ScieloMiner:
             except (AttributeError, IndexError):
                 element = mining.MetaData("citation_date")
                 try:
-                    return self.get(element).replace('/', '-')
+                    return datetime.datetime.strptime(self.get(element), "%m/%Y").date()
                 except Exception as e:
                     return None
             except:

@@ -152,7 +152,7 @@ if __name__ == '__main__':
                 errors = statusTable.insert_row(row)
                 if errors != []:
                     print(f"We've got some errors when updating bq: {errors}", flush=True)
-            print(f"Sent {len(newData)} rows to rabbitMQ queue.", flush=True)
+            print(f"Sent {len(newData)} rows to pubsub queue.", flush=True)
     #
             # Wait for the next loop
             time.sleep(DELAY)
