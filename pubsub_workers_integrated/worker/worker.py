@@ -2,24 +2,26 @@
 
 import json
 import tldextract
-from datetime import datetime
+from datetime import datetime, timezone
 from google.cloud import pubsub_v1
 from tables import StatusTable, DataTable
-from site_worker_integrated import SiteWorkerIntegrated
+from site_worker_integrated import SiteWorkerIntegrated, MinerNotFoundError
 
 statusTable = StatusTable().GetOrCreate()
 dataTable = DataTable().GetOrCreate()
 
-
 def callback(message):
     print(type(message))
     print(message.data.decode("utf-8"))
+    print("Delivery attempt number:", message.delivery_attempt)
     status = json.loads(message.data.decode("utf-8"))
     print(f"\n [x] Received {message}", flush=True)
 
     # Tell bq that we received the request
+    print(status, flush=True)
     status['status'] = 'Started Mining'
-    status['timestamp'] = datetime.utcnow()
+    status['timestamp'] = datetime.now(timezone.utc).date()
+    #status['timestamp'] = datetime.utcnow()
     status['worker_id'] = self_id
     errors = statusTable.insert_row(status)
     if errors != []:
@@ -41,18 +43,33 @@ def callback(message):
 #            print(f"We've got some errors when updating bq: {errors}", flush=True)
 #        return
 #   data = miner.GetArticle(status['article_url'])
-    data = SiteWorkerIntegrated().send_request(status['article_url'])
+    try:
+        data = SiteWorkerIntegrated().send_request(status['article_url'])
+    except MinerNotFoundError:
+        print("Mining failed.", flush=True)
+        status['status'] = 'Failed'
+        #status['timestamp'] = datetime.utcnow()
+        status['timestamp'] = datetime.now(timezone.utc).date()
+        errors = statusTable.insert_row(status)
+        #message.ack()
+        message.nack()
+        if errors != []:
+            print(f"We've got some errors when updating bq: {errors}", flush=True)
+        return
+        
     print(data)
     if data is None:
         print("Mining returned no results.", flush=True)
         status['status'] = "No results"
-        status['timestamp'] = datetime.utcnow()
+        #status['timestamp'] = datetime.utcnow()
+        status['timestamp'] = datetime.now(timezone.utc).date()
         errors = statusTable.insert_row(status)
         if errors != []:
             print(f"We've got some errors when updating bq: {errors}", flush=True)
         message.ack()
         return
-    data['language'] = status['language']  # Should always be true...
+    if 'language' not in data:
+        data['language'] = status['language']
     print("\nGot data:", flush=True)
     print(*data.items(), sep='\n', flush=True)
 
@@ -63,7 +80,8 @@ def callback(message):
 
     # Send an update to bq that we're done
     status['status'] = 'Finished Mining'
-    status['timestamp'] = datetime.utcnow()
+    #status['timestamp'] = datetime.utcnow()
+    status['timestamp'] = datetime.now(timezone.utc).date()
     errors = statusTable.insert_row(status)
     if errors != []:
         print(f"We've got some errors when updating bq: {errors}", flush=True)
@@ -112,9 +130,9 @@ if __name__ == "__main__":
 
     # Stop the thread from quitting until the job is finished
     try:
-        streaming_pull_future.result()
+        streaming_pull_future.result(timeout=60)
         print("result", flush=True)
     except Exception as e:
-        print(e)
+        print(e, flush=True)
         streaming_pull_future.cancel()
         print("cancel", flush=True)
