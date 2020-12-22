@@ -9,6 +9,8 @@ from miners import MedrxivMiner
 from miners import PreprintsMiner
 from miners import ScieloMiner
 
+class MinerNotFoundError(Exception):
+    pass
 
 class SiteWorkerIntegrated:
     """
@@ -107,7 +109,10 @@ class SiteWorkerIntegrated:
                        'scielo.br': ScieloSiteWorker(url, driver_path),
                        'preprints.org': PreprintsSiteWorker(url, driver_path)
                        }
-        return site_worker[domain_name]
+        try:
+            return site_worker[domain_name]
+        except KeyError as e:
+            raise MinerNotFoundError(f"The miner you requested ({domain_name}) does not exist")
 
 
 """ Site Workers """
