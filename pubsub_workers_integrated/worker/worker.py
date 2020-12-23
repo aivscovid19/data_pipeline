@@ -66,8 +66,10 @@ def callback(message):
             return
         message.ack()
         return
-    if 'language' not in data:
-        data['language'] = status['language']
+    
+    if not data['language']:
+        data['language'] = status['language']  # Should always be true...
+
     print("\nGot data:", flush=True)
     print(*data.items(), sep='\n', flush=True)
 

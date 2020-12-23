@@ -1,6 +1,6 @@
 """
 Biorxiv miner by Yeshwanth R.
-Edited by Gulnoza Kh. on 2020-11-09
+Edited by Gulnoza Kh. on 2020-12-17
 """
 
 import centaurminer as mining
@@ -10,8 +10,6 @@ class BiorxivMiner:
     """
     Miner for https://www.biorxiv.org/
     """
-    def __init__(self):
-        pass
 
     class BiorxivLocations(mining.PageLocations):
         """ This is a class used to find the schema in the journal """
@@ -37,4 +35,4 @@ class BiorxivMiner:
             return mining.TagList(self.get(element, several=True), tag='organization')
 
         def get_references(self, element):
-            return mining.TagList(self.get(element, several=True), tag='reference')
+            return self.get(element, several=True)

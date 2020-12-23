@@ -10,8 +10,6 @@ class MedrxivMiner:
     """
     Miner for https://www.medrxiv.org/
     """
-    def __init__(self):
-        pass
 
     class MedrxivLocations(mining.PageLocations):
         category = mining.Element("xpath", "//span[@class='highwire-article-collection-term']")

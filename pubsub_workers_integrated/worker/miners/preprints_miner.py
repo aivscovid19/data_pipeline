@@ -1,6 +1,6 @@
 """
 Preprints miner by Yeshwanth R.
-Edited by Gulnoza Kh. on 2020-11-09
+Edited by Gulnoza Kh. on 2020-12-17
 """
 
 import centaurminer as mining
@@ -10,8 +10,6 @@ class PreprintsMiner:
     """
     Miner for https://preprints.org/
     """
-    def __init__(self):
-        pass
 
     class PreprintsLocations(mining.PageLocations):
         abstract = mining.MetaData("og:description")
@@ -37,4 +35,4 @@ class PreprintsMiner:
             return mining.TagList(self.get(element, several=True), tag='organization')
 
         def get_references(self, element):
-            return mining.TagList(self.get(element, several=True), tag='ref')
+            return self.get(element, several=True)
