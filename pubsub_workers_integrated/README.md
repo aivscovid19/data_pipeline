@@ -25,7 +25,7 @@ docker build -t pubsub_sender -f sender/Dockerfile .
 docker build -t pubsub_worker -f worker/Dockerfile .
 ```
 
-To make things easier, let's create some environment variables with our project ID, a compute region and a cluster name of your choice. You can't select any value to your region, you need to choose one from the ![available regions](https://cloud.google.com/compute/docs/regions-zones#available) of Google Cloud Platform.
+To make things easier, let's create some environment variables with our project ID, a compute region and a cluster name of your choice. You can't select any value to your region, you need to choose one from the [available regions](https://cloud.google.com/compute/docs/regions-zones#available) of Google Cloud Platform.
 
 ```
 export PROJECT_ID=$(gcloud config list --format 'value(core.project)' 2>/dev/null
@@ -33,7 +33,7 @@ export CLUSTER_NAME=<my-cluster-name>
 export REGION=<my-region>
 ```
 
-After building the images, it's required to tag and upload the images to the Google Container Registry. The whole process may be found at GCP documentation, but here's a summary with the main instructions. **Be careful:** You must set Google Storage permissions to upload images to the Container Registry. This can be set with Cloud API permissions on a Google Compute Engine instance. For more information regarding this issue, look for the ![GCP reference documentation](https://cloud.google.com/container-registry/docs/pushing-and-pulling).
+After building the images, it's required to tag and upload the images to the Google Container Registry. The whole process may be found at GCP documentation, but here's a summary with the main instructions. **Be careful:** You must set Google Storage permissions to upload images to the Container Registry. This can be set with Cloud API permissions on a Google Compute Engine instance. For more information regarding this issue, look for the [GCP reference documentation](https://cloud.google.com/container-registry/docs/pushing-and-pulling).
 
 ```
 docker tag pubsub_sender gcr.io/$PROJECT_ID/pubsub_sender:latest
