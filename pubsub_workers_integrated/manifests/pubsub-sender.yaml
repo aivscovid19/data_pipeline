@@ -51,7 +51,7 @@ spec:
               key: DELAY
               name: pubsub-sender-config
         # Change here to include your Container URL to pull
-        image: gcr.io/for-adrian/pubsub-sender:latest
+        image: gcr.io/for-adrian/pubsub_sender:latest
         imagePullPolicy: IfNotPresent
         name: pubsub-sender
         resources: {}
