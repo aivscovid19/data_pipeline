@@ -29,31 +29,31 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: PUBSUB_VERIFICATION_TOKEN
-              name: pubsub-worker-config-gjp9
+              name: pubsub-worker-config
         - name: PUBSUB_TOPIC
           valueFrom:
             configMapKeyRef:
               key: PUBSUB_TOPIC
-              name: pubsub-worker-config-gjp9
+              name: pubsub-worker-config
         - name: GOOGLE_CLOUD_PROJECT
           valueFrom:
             configMapKeyRef:
               key: GOOGLE_CLOUD_PROJECT
-              name: pubsub-worker-config-gjp9
+              name: pubsub-worker-config
         - name: STATUS_TABLE_ID
           valueFrom:
             configMapKeyRef:
               key: STATUS_TABLE_ID
-              name: pubsub-worker-config-gjp9
+              name: pubsub-worker-config
         - name: DATA_TABLE_ID
           valueFrom:
             configMapKeyRef:
               key: DATA_TABLE_ID
-              name: pubsub-worker-config-gjp9
+              name: pubsub-worker-config
         # Change here to include your Container URL to pull
-        image: gcr.io/for-adrian/pubsub-worker@sha256:d05df8319eb552effbdbe2d630ac129c38a4d30fe821907ce2593d050bdfcaf2
+        image: gcr.io/for-adrian/pubsub-worker:latest
         imagePullPolicy: IfNotPresent
-        name: pubsub-worker-sha256-1
+        name: pubsub-worker
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
