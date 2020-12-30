@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   labels:
     app: pubsub-worker
-  name: pubsub-worker-config-gjp9
+  name: pubsub-worker-config
   namespace: default
 data:
   DATA_TABLE_ID: for-adrian.urls.data
