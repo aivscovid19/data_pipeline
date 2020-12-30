@@ -47,7 +47,7 @@ Let's move on to the GKE setup on itself. We are going to use the `gcloud` CLI u
 ```
 gcloud config set project $PROJECT_ID
 gcloud config set compute/zone $ZONE
-gcloud container clusters create $CLUSTER_NAME --num-nodes=3
+gcloud container clusters create $CLUSTER_NAME --num-nodes=3 --scopes=gke-default,pubsub,bigquery
 gcloud container clusters get-credentials $CLUSTER_NAME
 ```
 
