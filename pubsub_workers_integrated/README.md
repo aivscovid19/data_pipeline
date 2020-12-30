@@ -12,7 +12,7 @@ Copy this repo into your VM or CLoud Shell instance with:
 
 ```shell
 git clone -b feature/k8s https://github.com/aivscovid19/data_pipeline.git
-cd data_pipeline/pubsub_worker_integrated
+cd data_pipeline/pubsub_workers_integrated
 ```
 
 ## Setup - Google Kubernetes Engine
