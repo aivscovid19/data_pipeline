@@ -29,31 +29,31 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: PUBSUB_VERIFICATION_TOKEN
-              name: pubsub-sender-config-ym7i
+              name: pubsub-sender-config
         - name: PUBSUB_TOPIC
           valueFrom:
             configMapKeyRef:
               key: PUBSUB_TOPIC
-              name: pubsub-sender-config-ym7i
+              name: pubsub-sender-config
         - name: GOOGLE_CLOUD_PROJECT
           valueFrom:
             configMapKeyRef:
               key: GOOGLE_CLOUD_PROJECT
-              name: pubsub-sender-config-ym7i
+              name: pubsub-sender-config
         - name: STATUS_TABLE_ID
           valueFrom:
             configMapKeyRef:
               key: STATUS_TABLE_ID
-              name: pubsub-sender-config-ym7i
+              name: pubsub-sender-config
         - name: DELAY
           valueFrom:
             configMapKeyRef:
               key: DELAY
-              name: pubsub-sender-config-ym7i
+              name: pubsub-sender-config
         # Change here to include your Container URL to pull
-        image: gcr.io/for-adrian/pubsub-sender@sha256:e5c848d2d01d52628257a8d12f087525fd72a3dff3a0686399d22ab36ab2fd6e
+        image: gcr.io/for-adrian/pubsub-sender:latest
         imagePullPolicy: IfNotPresent
-        name: pubsub-sender-sha256-1
+        name: pubsub-sender
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
