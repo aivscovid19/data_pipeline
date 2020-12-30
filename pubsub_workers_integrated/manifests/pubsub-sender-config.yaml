@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   labels:
     app: pubsub-sender
-  name: pubsub-sender-config-ym7i
+  name: pubsub-sender-config
   namespace: default
 data:
   DELAY: "60"
