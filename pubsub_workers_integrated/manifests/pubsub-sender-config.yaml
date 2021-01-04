@@ -7,7 +7,7 @@ metadata:
   namespace: default
 data:
   DELAY: "60"
-  GOOGLE_CLOUD_PROJECT: for-adrian
-  PUBSUB_TOPIC: url_distribution
-  PUBSUB_VERIFICATION_TOKEN: url_subscriber
-  STATUS_TABLE_ID: for-adrian.urls.cool_links
+  GOOGLE_CLOUD_PROJECT: PROJECT_ID
+  PUBSUB_TOPIC: TOPIC_ID
+  PUBSUB_VERIFICATION_TOKEN: SUBSCRIBER_ID
+  STATUS_TABLE_ID: PROJECT_ID.STATUS_TABLE_NAME

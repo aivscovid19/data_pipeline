@@ -6,8 +6,8 @@ metadata:
   name: pubsub-worker-config
   namespace: default
 data:
-  DATA_TABLE_ID: for-adrian.urls.data
-  GOOGLE_CLOUD_PROJECT: for-adrian
-  PUBSUB_TOPIC: url_distribution
-  PUBSUB_VERIFICATION_TOKEN: url_subscriber
-  STATUS_TABLE_ID: for-adrian.urls.cool_links
+  DATA_TABLE_ID: PROJECT_ID.DATA_TABLE_NAME
+  GOOGLE_CLOUD_PROJECT: PROJECT_ID
+  PUBSUB_TOPIC: TOPIC_ID
+  PUBSUB_VERIFICATION_TOKEN: SUBSCRIBER_ID
+  STATUS_TABLE_ID: PROJECT_ID.STATUS_TABLE_NAME
