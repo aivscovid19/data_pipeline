@@ -1,4 +1,4 @@
-peline for URL distribution
+# Pipeline for URL distribution
 
 ## Overview
 We use the Google Pub/Sub API to handle job distribution, where each worker (subscriber) is given one URL to work on independently. When it finishes, Pub/Sub will send the subscriber another URL to mine. Both the sender (Publisher) and receiver (subscriber) sides of Pub/Sub need to run constantly, so each one has its own docker container to set up.
@@ -44,7 +44,7 @@ gcloud pubsub subscriptions create $SUBSCRIBER_ID \
 The way the code is set up, you don't need to manually set up bigquery before we start. However, you do have to decide a few table names. Every bigquery table is set up in a 3-tier naming scheme, like `project-id.dataset-id.table-id`. We will use 2 tables - the status table which acts as both an input for new URLs to mine and a log for current mining status for each URL, and the data table which is where the data from each article is sent. In the following commands, specify the dataset id and table name for each table, like `my-dataset.my-table`:
 
 ```
-export STATUS_TABLE_ID=<my-dataset.my-table-name
+export STATUS_TABLE_ID=<my-dataset.my-table-name>
 export DATA_TABLE_ID=<my-dataset.my-table-name>
 ```
 (NOTE: The dataset and table names can only contain letters, numbers, and underscores.)
