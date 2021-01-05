@@ -7,94 +7,98 @@ from google.cloud import pubsub_v1
 from tables import StatusTable, DataTable
 from site_worker_integrated import SiteWorkerIntegrated, MinerNotFoundError
 from selenium.common.exceptions import WebDriverException
+from google.cloud import logging
+from os import environ
+
+logging_client = logging.Client()
+worker_name = environ.get("MINER_ID")
+logger = logging_client.logger(worker_name)
 
 statusTable = StatusTable().GetOrCreate()
 dataTable = DataTable().GetOrCreate()
 
+def LogToGCP(text):
+    '''
+    Log a message using google cloud logging, with the VM name at the beginning.
+    '''
+    global logger, worker_name
+    logger.log_text(worker_name + ": " + text)
+
+
 def callback(message):
-    print(type(message))
-    print(message.data.decode("utf-8"))
-    print("Delivery attempt number:", message.delivery_attempt)
+    LogToGCP(f"\n [x] Received {message.data.decode('utf-8')}")
+    LogToGCP("Delivery attempt number: " + message.delivery_attempt)
     status = json.loads(message.data.decode("utf-8"))
-    print(f"\n [x] Received {message}", flush=True)
 
     # Tell bq that we received the request
-    print(status, flush=True)
     status['status'] = 'Started Mining'
     status['timestamp'] = datetime.now(timezone.utc)
-    status['worker_id'] = self_id
+    status['worker_id'] = worker_name
     errors = statusTable.insert_row(status)
     if errors != []:
-        print(f"We've got some errors when updating bq: {errors}", flush=True)
+        LogToGCP(f"We've got some errors when updating bq: {errors}")
         message.nack()
         return
 
     # Do the actual mining
-    print("getting article info from", status['article_url'], flush=True)
+    LogToGCP("Getting article info from " + status['article_url'])
     try:
         data = SiteWorkerIntegrated().send_request(status['article_url'])
     except MinerNotFoundError as e:
-        print("Mining failed.", flush=True)
-        print(e, flush=True)
-        status['status'] = 'Failed'
+        LogToGCP("Mining failed: " + e)
+        status['status'] = 'Failed - No miner'
         status['timestamp'] = datetime.now(timezone.utc)
         errors = statusTable.insert_row(status)
         message.nack()
         if errors != []:
-            print(f"We've got some errors when updating bq: {errors}", flush=True)
+            LogToGCP(f"We've got some errors when updating bq: {errors}")
         return
     except WebDriverException as e:  # Handle webdriver timeouts
-        print(e, flush=True)
-        status['status'] = 'Failed'
+        LogToGCP(e)
+        status['status'] = 'Failed - Timeout'
         status['timestamp'] = datetime.now(timezone.utc)
         errors = statusTable.insert_row(status)
         message.nack()
         if errors != []:
-            print(f"We've got some errors when updating bq: {errors}", flush=True)
+            LogToGCP(f"We've got some errors when updating bq: {errors}")
         return
         
         
-    print(data)
     if data is None:
-        print("Mining returned no results.", flush=True)
-        status['status'] = "No results"
+        LogToGCP("Mining returned no results.")
+        status['status'] = "Failed - No results"
         status['timestamp'] = datetime.now(timezone.utc)
         errors = statusTable.insert_row(status)
         if errors != []:
-            print(f"We've got some errors when updating bq: {errors}", flush=True)
+            LogToGCP(f"We've got some errors when updating bq: {errors}")
             message.nack()
             return
         message.ack()
         return
     if 'language' not in data:
         data['language'] = status['language']
-    print("\nGot data:", flush=True)
-    print(*data.items(), sep='\n', flush=True)
 
     # Send results to the data table
     errors = dataTable.insert_row(data)
     if errors != []:
-        print(f"We've got some errors when updating bq: {errors}", flush=True)
+        LogToGCP(f"We've got some errors when updating bq: {errors}")
 
     # Send an update to bq that we're done
     status['status'] = 'Finished Mining'
     status['timestamp'] = datetime.now(timezone.utc)
     errors = statusTable.insert_row(status)
     if errors != []:
-        print(f"We've got some errors when updating bq: {errors}", flush=True)
+        LogToGCP(f"We've got some errors when updating bq: {errors}")
         message.nack()
         return
 
-    print(" [x] Done", flush=True)
-    print(' [*] Waiting for messages. To exit press CTRL+C', flush=True)
+    LogToGCP(" [x] Done")
+    LogToGCP(' [*] Waiting for messages.')
     message.ack()
 
 
 if __name__ == "__main__":
-    from os import environ
     import uuid
-
-    self_id = str(uuid.uuid1())  # Use uuid1 so the network ID is in the uuid, and we can trace it back to this machine.
 
     # extract environment variables
     project_id = DataTable.table_id.split('.')[0]
@@ -102,7 +106,8 @@ if __name__ == "__main__":
 
     assert project_id is not None, "Include a .env file using the docker argument --env-file when running."
 
-    print(' [*] Waiting for messages. To exit press CTRL+C', flush=True)
+    LogToGCP(f"Miner started at {datetime.now().strftime('%d/%m/%y: %H:%M:%S')}.")
+    LogToGCP(' [*] Waiting for messages.')
 
     # Create a subscriber
     subscriber = pubsub_v1.SubscriberClient()
@@ -116,13 +121,12 @@ if __name__ == "__main__":
         callback=callback,
         flow_control=flow_control
     )
-    print(f"Listening for messages on {subscription_path}", flush=True)
+    LogToGCP(f"Listening for messages on {subscription_path}")
+    print(f"Listening for messages on {subscription_path}. Go to google logging to see status.")
 
     # Stop the thread from quitting until the job is finished
     try:
         streaming_pull_future.result()
-        print("result", flush=True)
     except Exception as e:
-        print(e, flush=True)
+        LogToGCP(e)
         streaming_pull_future.cancel()
-        print("cancel", flush=True)
