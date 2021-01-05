@@ -75,8 +75,8 @@ def callback(message):
             return
         message.ack()
         return
-    if 'language' not in data:
-        data['language'] = status['language']
+    if not data.get('language'):
+        data['language'] = status['language']  # Should always be true...
 
     # Send results to the data table
     errors = dataTable.insert_row(data)

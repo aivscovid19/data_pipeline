@@ -1,6 +1,6 @@
 """
 Scielo miner by Adrian R.
-Edited by Gulnoza Kh. on 2020-11-09
+Edited by Gulnoza Kh. on 2020-12-17
 """
 
 import centaurminer as mining
@@ -11,8 +11,6 @@ class ScieloMiner:
     """
     Miner for https://scielo.org
     """
-    def __init__(self):
-        pass
 
     class ScieloLocations(mining.PageLocations):
         """Locations on the page to be gathered by Selenium webdriver
@@ -30,14 +28,19 @@ class ScieloMiner:
         category = mining.Element("xpath", "//p[@class='categoria']")
         date_publication = mining.Element("xpath", "//div[@class='content']/h3")
         keywords = mining.Element("css_selector", ".trans-abstract > p:last-of-type")
+        language = mining.MetaData("citation_language")
         license = "https://scielo.org/en/about-scielo/open-access-statement/"
         organization_affiliated = mining.Element("css_selector", "p.aff").get_attribute('innerHTML')
         references = mining.Element("css_selector", "p.ref")
         source = mining.MetaData("citation_journal_title")
+        title = mining.Element("css_selector", "p.title")
+
+        # addition to meta-info:
+        title_translated = mining.Element("css_selector", "p.trans-title")
+        abstract_translated = mining.Element("css_selector", ".trans-abstract, .trans-abstract > div.section")
 
         # Null:
         citations = ''
-        language = ''
         search_keyword = ''
         source_impact_factor = ''
 
@@ -56,23 +59,6 @@ class ScieloMiner:
         #########################
         ### Utilities Methods ###
         #########################
-      
-        @staticmethod
-        def TagList(str_list, tag="item"):
-            """ Returns a string from a joined list with elements separated by HTML-like tags
-            Note:
-                This method is overwritting base class centaurminer.MiningEngine
-                default `CollectURLs` method.
-            Args:
-                str_list (list):     List of strings to be joined with HTML-like tags.
-                tag (str, optional): Tag used to separate the elements in the form <></>
-            Returns:
-                A string containing the list elements separated by HTML-like tags,
-                None if str_list is None or empty.
-            """
-            if str_list:
-                return ''.join(map(lambda s: f'<{tag}>{s.strip()}</{tag}>', str_list))
-            return None
 
         @staticmethod
         def __format_author(author):
@@ -105,10 +91,6 @@ class ScieloMiner:
         # def get_id(self, element):
         #     """Return unique identifier for article ID."""
         #     return str(uuid.uuid4())
-
-        def get_abstract(self, element):
-            """Fetch abstract information from article URL."""
-            return '\n'.join(self.get(element, several=True))
 
         def get_body(self, element):
             """Gather body text from article URL
@@ -173,18 +155,18 @@ class ScieloMiner:
         def get_organization_affiliated(self, element):
             """Returns a string with article authors organizations, separated by HTML-like elements"""
             orgs = [o.split('</sup>')[-1] for o in self.get(element, several=True)]
-            return self.TagList(orgs, "orgs")
+            return mining.TagList(orgs, "orgs")
 
         def get_references(self, element):
             """Returns a string with article references, separated by HTML-like elements"""
             reflist = self.get(element, several=True)
             refs = [r.replace('[ Links ]', '').strip('0123456789. ') for r in reflist]
-            return self.TagList(refs, "reference")
+            return refs
 
         def get_authors(self, element):
             """Returns a string with article authors from search engine, separated by HTML-like elements"""
             authors = map(self.__format_author, self.get(element, several=True))
-            return self.TagList(list(dict.fromkeys(authors)), "author")
+            return mining.TagList(list(dict.fromkeys(authors)), "author")
 
         def get_keywords(self, element):
             """Gather article keywords from centaurminer.Element object.
@@ -194,4 +176,18 @@ class ScieloMiner:
                 String comprising keywords separated by HTML-like tags.
             """
             keys = self.__parse_keywords(self.get(element))
-            return self.TagList(keys, "keyword")
+            if keys:
+                return mining.TagList(keys, "keyword")
+            return None
+
+        def get_title_translated(self, element):
+            """Returns a string with translated title/s"""
+            return self.get(element, several=True)
+
+        def get_abstract_translated(self, element):
+            """Returns a string with translated abstract/s"""
+            return self.get(element, several=True)
+
+        def get_extra_link(self, element):
+            """Returns a string with link to pdf/s"""
+            return self.get(element, several=True)
