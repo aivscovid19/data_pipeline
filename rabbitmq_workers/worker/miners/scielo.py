@@ -130,9 +130,27 @@ class ScieloEngine(mining.MiningEngine):
             String representing date publication, in format YYYY-MM-DD.
         """
         try:
-            return str((self.get(element).split('Epub')[1]).date())
+            date_str = str(self.get(element).split('Epub ')[1])
+            try:
+                date_obj = datetime.datetime.strptime(date_str, '%b %d, %Y')
+            except ValueError:
+                date_obj = datetime.datetime.strptime(date_str, '%B %d, %Y')          
+            return date_obj.strftime('%Y-%m-%d')
         except (AttributeError, IndexError):
+            element = mining.MetaData("citation_date")
+            try:
+                # date in the format MM/YYYY
+                month, year = self.get(element).split('/')
+                return datetime.combine(datetime.date(year, month, 1), datetime.min.time())
+                #return self.get(element).replace('/', '-')
+            except Exception as e:
+                return None
+        except:
             return None
+        #try:
+        #    return str((self.get(element).split('Epub')[1]).date())
+        #except (AttributeError, IndexError):
+        #    return None
 
     def get_organization_affiliated(self, element):
         """Returns a string with article authors organizations, separated by HTML-like elements"""
@@ -164,7 +182,7 @@ class ScieloEngine(mining.MiningEngine):
         """Retrieve mined information from a specific URL"""
         super().gather(url)
         self.results['acquisition_date'] = self.results.pop('date_aquisition')
-        self.results['date']             = self.results.pop('date_publication')
+        self.results['publication_date'] = self.results.pop('date_publication')
         #self.results['pdf_link']         = self.results.pop('extra_link')
         self.results['link']             = self.results.pop('url')
         if not self.results['abstract']:
@@ -173,24 +191,23 @@ class ScieloEngine(mining.MiningEngine):
                 self.results = None
         pass
 
-def GetArticle(url):
-    miner = ScieloEngine(ScieloLocations)
-    miner.gather(url)
-    
-    # Mould results to match schema
-    references = miner.results.pop('references')
-    keywords = miner.results.pop("keywords")
-    orgs = miner.results.pop("organization_affiliated")
-    license = miner.results.pop("license")
-    extra = miner.results.pop('extra_link')
+# Static miner from this file
+miner = ScieloEngine(ScieloLocations)
 
-    meta_info = {
-        "references": references,
-        "keywords": keywords,
-        "organization_affiliated": orgs,
-        "license": license,
-        "pdf_link": extra
-    }
+def GetArticle(url):
+    miner.gather(url)
+
+    # Check for valid data
+    if miner.results is None:
+        return None
+    
+    # Mould results to match schema - move extra data to the meta_info column
+    meta_info = {}
+    keys = ['references', 'organization_affiliated', 'keywords', 'license', 'extra_link']
+    for key in keys:
+        if miner.results.get(key) is not None: # key exists and is non-None
+            meta_info = miner.results.pop(key)
+
     miner.results['meta_info'] = json.dumps(meta_info)
 
     return miner.results

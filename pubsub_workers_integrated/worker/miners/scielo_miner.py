@@ -135,14 +135,14 @@ class ScieloMiner:
             try:
                 date_str = str(self.get(element).split('Epub ')[1])
                 try:
-                    date_obj = datetime.datetime.strptime(date_str, '%b %d, %Y')
+                    date_obj = datetime.datetime.strptime(date_str, '%b %d, %Y').date()
                 except ValueError:
-                    date_obj = datetime.datetime.strptime(date_str, '%B %d, %Y')
-                return date_obj.strftime('%Y-%m-%d')
+                    date_obj = datetime.datetime.strptime(date_str, '%B %d, %Y').date()
+                return date_obj
             except (AttributeError, IndexError):
                 element = mining.MetaData("citation_date")
                 try:
-                    return self.get(element).replace('/', '-')
+                    return datetime.datetime.strptime(self.get(element), "%m/%Y").date()
                 except Exception as e:
                     return None
             except:

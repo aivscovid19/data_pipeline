@@ -8,6 +8,7 @@ import uuid
 from datetime import datetime
 from google.cloud import bigquery
 from tables import StatusTable, DataTable
+import miners
 
 self_id = str(uuid.uuid1())  # Use uuid1 so the network ID is in the uuid, and we can trace it back to this machine.
 
@@ -38,7 +39,7 @@ dataTable = DataTable().GetOrCreate()
 
 def callback(ch, method, properties, body):
     status = json.loads(body)
-    print("\n [x] Received %r" % body, flush=True)
+    print("[x] Received %r" % body, flush=True)
 
     # Tell bq that we received the request
     status['status'] = 'Started Mining'
@@ -55,7 +56,6 @@ def callback(ch, method, properties, body):
         print(f"We've got some errors when updating bq: {errors}", flush=True)
 
     # Do the actual mining
-    import miners
     print("getting article info from", status['article_url'], flush=True)
     #domain = status['catalog_url'].split(".")[0]
     domain = urlparse(status['article_url']).netloc.split('.')[1]  # Get rid of the extension and subdomain
@@ -82,7 +82,7 @@ def callback(ch, method, properties, body):
         return
     data['language'] = status['language']  # Should always be true...
     print("\nGot data:", flush=True)
-    print(*data.items(), sep='\n')
+    #print(*data.items(), sep='\n')
 
     # Send results to the data table
     errors = dataTable.insert_row(data)
@@ -96,7 +96,7 @@ def callback(ch, method, properties, body):
     if errors != []:
         print(f"We've got some errors when updating bq: {errors}", flush=True)
 
-    print(" [x] Done", flush=True)
+    print(" [x] Done\n", flush=True)
     print(' [*] Waiting for messages. To exit press CTRL+C', flush=True)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 

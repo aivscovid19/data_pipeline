@@ -1,2 +1,4 @@
 __pycache__
 .idea*
+pubsub_workers_integrated/.env
+rabbitmq_workers/.env
