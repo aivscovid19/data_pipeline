@@ -9,10 +9,20 @@ We are going to assume you're working in a [google cloud project (GCP)](https://
 
 If you're using the GCP Cloud Shell (recommended way), you may autohrize the API accesses as they are required by the Google Cloud services.
 
-Copy this repo into your VM or CLoud Shell instance with:
+Copy this repo into your VM or Cloud Shell instance with:
 
 ```shell
 git clone -b feature/k8s https://github.com/aivscovid19/data_pipeline.git
+cd data_pipeline/pubsub_workers_integrated
+```
+
+# Quick Setup - Deploy Script
+
+To make things easier, you may run the deployment script `deploy.sh` from a Cloud Shell or from your own shell with API access to the GCP. Before running it, you may need to edit the `.env` configuration file and overwrite the default values with the ones of your choice. This quick setup comprises all instructions present on the following sections, so feel free to use it as quick deploy tool.
+
+```
+vim .env      # Edit environment variables values
+./deploy.sh
 ```
 
 ## Setup - Google Cloud Pub/Sub
@@ -55,7 +65,7 @@ export DATA_TABLE_ID=<my-dataset.my-table-name>
 The Kubernetes way to deploy the mining system folows the same fashion as the containers isolated, at least until some point. First of all, we need to build the Docker images as we did in an isolated environment.
 
 ```
-cd data_pipeline/pubsub_workers_integrated
+
 docker build -t pubsub_sender -f sender/Dockerfile .
 docker build -t pubsub_worker -f worker/Dockerfile .
 docker image ls   # To check if the images were created succesfully. If not, run the build command again.
