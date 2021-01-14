@@ -50,6 +50,10 @@ spec:
             configMapKeyRef:
               key: DATA_TABLE_ID
               name: pubsub-worker-config
+        - name: MINER_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         # Change here to include your Container URL to pull
         image: gcr.io/PROJECT_ID/pubsub_worker:latest
         imagePullPolicy: IfNotPresent
