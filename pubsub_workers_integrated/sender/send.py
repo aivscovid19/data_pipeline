@@ -103,7 +103,7 @@ if __name__ == '__main__':
     #mq_pass = environ.get('RABBIT_PASSWORD')
     #host_ip = environ.get('RABBIT_HOST_IP')
     #
-    DELAY = int(os.environ.get('DELAY'))
+    DELAY = int(os.getenv('DELAY', '60'))
     #
     #assert None not in [mq_user, mq_pass, host_ip], "Include a .env file using the docker argument --env-file when running."
     #
