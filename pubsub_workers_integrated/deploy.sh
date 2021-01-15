@@ -31,10 +31,10 @@ gcloud config set compute/zone $ZONE
 gcloud container clusters create $CLUSTER_NAME --num-nodes=3 --scopes=gke-default,pubsub,bigquery
 gcloud container clusters get-credentials $CLUSTER_NAME
 
-sed -i "s/PROJECT_ID/${PROJECT_ID}/g;s/TOPIC_ID/${TOPIC_ID}/g;s/SUBSCRIBER_ID/${SUBSCRIBER_ID}/g;s/STATUS_TABLE_NAME/${STATUS_TABLE_ID}/g" manifests/pubsub-sender-config.yaml
-sed -i "s/PROJECT_ID/${PROJECT_ID}/g;s/TOPIC_ID/${TOPIC_ID}/g;s/SUBSCRIBER_ID/${SUBSCRIBER_ID}/g;s/STATUS_TABLE_NAME/${STATUS_TABLE_ID}/g;s/DATA_TABLE_NAME/${DATA_TABLE_ID}/g" manifests/pubsub-worker-config.yaml
+sed -i "s|PROJECT_ID|${PROJECT_ID}|g;s|TOPIC_ID|${TOPIC_ID}|g;s|SUBSCRIBER_ID|${SUBSCRIBER_ID}|g;s|STATUS_TABLE_NAME|${STATUS_TABLE_ID}|g" manifests/pubsub-sender-config.yaml
+sed -i "s|PROJECT_ID|${PROJECT_ID}|g;s|TOPIC_ID|${TOPIC_ID}|g;s|SUBSCRIBER_ID|${SUBSCRIBER_ID}|g;s|STATUS_TABLE_NAME|${STATUS_TABLE_ID}|g;s|DATA_TABLE_NAME|${DATA_TABLE_ID}|g" manifests/pubsub-worker-config.yaml
 for i in ${APPS[*]}; do
-    sed -i "s/PROJECT_ID/${PROJECT_ID}/g" manifests/pubsub-${i}.yaml
+    sed -i "s|PROJECT_ID|${PROJECT_ID}|g" manifests/pubsub-${i}.yaml
     kubectl apply -f ./manifests/pubsub-${i}-config.yaml
     kubectl apply -f ./manifests/pubsub-${i}.yaml
 done
