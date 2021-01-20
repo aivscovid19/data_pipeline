@@ -12,7 +12,7 @@ from os import environ
 
 logging_client = logging.Client()
 worker_name = environ.get("MINER_ID")
-logger = logging_client.logger(worker_name)
+logger = logging_client.logger("workers")
 
 statusTable = StatusTable().GetOrCreate()
 dataTable = DataTable().GetOrCreate()
@@ -27,7 +27,7 @@ def LogToGCP(text):
 
 def callback(message):
     LogToGCP(f"\n [x] Received {message.data.decode('utf-8')}")
-    LogToGCP("Delivery attempt number: " + message.delivery_attempt)
+    LogToGCP("Delivery attempt number: " + str(message.delivery_attempt))
     status = json.loads(message.data.decode("utf-8"))
 
     # Tell bq that we received the request
@@ -45,7 +45,7 @@ def callback(message):
     try:
         data = SiteWorkerIntegrated().send_request(status['article_url'])
     except MinerNotFoundError as e:
-        LogToGCP("Mining failed: " + e)
+        LogToGCP("Mining failed: " + str(e))
         status['status'] = 'Failed - No miner'
         status['timestamp'] = datetime.now(timezone.utc)
         errors = statusTable.insert_row(status)
@@ -54,7 +54,7 @@ def callback(message):
             LogToGCP(f"We've got some errors when updating bq: {errors}")
         return
     except WebDriverException as e:  # Handle webdriver timeouts
-        LogToGCP(e)
+        LogToGCP(str(e))
         status['status'] = 'Failed - Timeout'
         status['timestamp'] = datetime.now(timezone.utc)
         errors = statusTable.insert_row(status)
@@ -128,5 +128,5 @@ if __name__ == "__main__":
     try:
         streaming_pull_future.result()
     except Exception as e:
-        LogToGCP(e)
+        LogToGCP(str(e))
         streaming_pull_future.cancel()
