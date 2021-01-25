@@ -1,5 +1,6 @@
 # Load business logic
 PROJECT_ID=$(gcloud config list --format 'value(core.project)' 2>/dev/null)
+PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} | grep "projectNumber" | sed 's|[^0-9]*||g')
 APPS=("sender" "worker")
 
 # Load Environment Variables
@@ -9,14 +10,29 @@ then
 fi
 
 # Setup of PubSub topics
-gcloud pubsub topics create $TOPIC_ID
 gcloud pubsub topics create $DEAD_LETTER_TOPIC_ID
+gcloud pubsub subscriptions create dead-letter-$SUBSCRIBER_ID   \
+     --topic=$DEAD_LETTER_TOPIC_ID                              \
+     --ack-deadline=60                                          \
+     --expiration-period=never
+
+gcloud pubsub topics create $TOPIC_ID
 gcloud pubsub subscriptions create $SUBSCRIBER_ID   \
      --topic=$TOPIC_ID                              \
      --dead-letter-topic=$DEAD_LETTER_TOPIC_ID      \
      --dead-letter-topic-project=$PROJECT_ID        \
      --ack-deadline=60                              \
      --expiration-period=never
+
+PUBSUB_SERVICE_ACCOUNT="service-$PROJECT_NUMBER@gcp-sa-pubsub.iam.gserviceaccount.com"
+
+gcloud pubsub topics add-iam-policy-binding $DEAD_LETTER_TOPIC_ID \
+    --member="serviceAccount:$PUBSUB_SERVICE_ACCOUNT"\
+    --role="roles/pubsub.publisher"
+
+gcloud pubsub subscriptions add-iam-policy-binding $SUBSCRIBER_ID \
+    --member="serviceAccount:$PUBSUB_SERVICE_ACCOUNT"\
+    --role="roles/pubsub.subscriber"
 
 # Create, tag and push Docker images
 for i in ${APPS[*]}; do
