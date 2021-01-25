@@ -1,6 +1,12 @@
 # Load business logic
 PROJECT_ID=$(gcloud config list --format 'value(core.project)' 2>/dev/null)
 PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} | grep "projectNumber" | sed 's|[^0-9]*||g')
+
+if [ -z $PROJECT_ID ]; then
+	echo "Failure in extracting GCP project id, insert it here: "
+	read PROJECT_ID
+fi
+
 APPS=("sender" "worker")
 
 # Load Environment Variables
@@ -8,6 +14,12 @@ if [ -f .env ]
 then
   export $(cat .env | sed 's/#.*//g' | xargs)
 fi
+
+# Load sample table for integration tests
+
+#bq mk --dataset $PROJECT_ID:sample
+#bq cp -a -f -n ai-vs-covid19:ula_test_urls.status_table $PROJECT_ID:$STATUS_TABLE_ID
+#bq query "DROP "
 
 # Setup of PubSub topics
 gcloud pubsub topics create $DEAD_LETTER_TOPIC_ID
