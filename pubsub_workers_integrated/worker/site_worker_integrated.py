@@ -90,9 +90,9 @@ class SiteWorkerIntegrated:
         }
 
         # Scielo specific meta-info
-        if miner.results['title_translated']:
+        if miner.results.get('title_translated'):
             meta_info['title_translated'] = miner.results['title_translated']
-        if miner.results['abstract_translated']:
+        if miner.results.get('abstract_translated'):
             meta_info['abstract_translated'] = miner.results['abstract_translated']
 
         data['meta_info'] = json.dumps(meta_info, ensure_ascii=False)
