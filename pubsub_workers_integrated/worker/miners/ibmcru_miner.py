@@ -1,6 +1,6 @@
 """
 IbmcRu miner by Gulnoza Kh.
-Edited by Gulnoza Kh. on 2020-11-09
+Edited by Gulnoza Kh. on 2021-02-03
 """
 
 import centaurminer as mining
@@ -24,8 +24,16 @@ class IbmcRuMiner:
         organization_affiliated = mining.MetaData("citation_author_institution")
         source = mining.MetaData("citation_journal_title")
         language = 'ru'
-        # pubmed_link = mining.Element("xpath", "//td[@class='arti'][@style='align:justify;']//a[@target='_blank']").get_attribute('href')
-        # translated_link = mining.Element("xpath", "//td[@class='arti']//a[@target='_blank']").get_attribute('href')
+
+        # addition to meta-info:
+        pubmed_id = mining.Element("xpath", "//td[@class='arti'][@style='align:justify;']//a[@target='_blank']")
+        pubmed_link = mining.Element("xpath",
+                                     "//td[@class='arti'][@style='align:justify;']//a[@target='_blank']").get_attribute(
+            'href')
+        translated_link_ibmc = mining.Element("xpath", "//td[@class='arti'][@style='align:justify;']//a").get_attribute(
+            'href')
+        translated_link_other = mining.Element("xpath", "//td[@class='arti']//a[@target='_blank']").get_attribute(
+            'href')
 
         # Null:
         body = ''
