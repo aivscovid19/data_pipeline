@@ -9,8 +9,10 @@ from miners import MedrxivMiner
 from miners import PreprintsMiner
 from miners import ScieloMiner
 
+
 class MinerNotFoundError(Exception):
     pass
+
 
 class SiteWorkerIntegrated:
     """
@@ -90,10 +92,20 @@ class SiteWorkerIntegrated:
         }
 
         # Scielo specific meta-info
-        if miner.results['title_translated']:
+        if miner.results.get('title_translated'):
             meta_info['title_translated'] = miner.results['title_translated']
-        if miner.results['abstract_translated']:
+        if miner.results.get('abstract_translated'):
             meta_info['abstract_translated'] = miner.results['abstract_translated']
+
+        # IbmcRu specific meta-info:
+        if miner.results.get('pubmed_id'):
+            meta_info['pubmed_id'] = miner.results['pubmed_id']
+        if miner.results.get('pubmed_link'):
+            meta_info['pubmed_link'] = miner.results['pubmed_link']
+        if miner.results.get('translated_link_ibmc'):
+            meta_info['translated_link_ibmc'] = miner.results['translated_link_ibmc']
+        if miner.results.get('translated_link_other'):
+            meta_info['translated_link_other'] = miner.results['translated_link_other']
 
         data['meta_info'] = json.dumps(meta_info, ensure_ascii=False)
         return data
