@@ -1,7 +1,7 @@
-FROM python:3.8.7-buster  AS compiler
+FROM python:3.8.7-buster AS compiler
 LABEL maintainer="yeshwanthreddy789@gmail.com"
 
-WORKDIR /usr/src/ap
+WORKDIR /usr/src/app
 ENV PATH=/root/.local/bin:$PATH
 
 ARG CHROMIUM_VERSION=83.0.4103.116-1~deb10u3
