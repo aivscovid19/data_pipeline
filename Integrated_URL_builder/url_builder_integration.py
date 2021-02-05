@@ -377,9 +377,9 @@ class pbmc_url(URL_builder):
     self.total_urls.extend(self.valid_urls[:nums])
     [self._url_list.append(i) for i in self.valid_urls[:nums]]
     self._create_url_schema(self._url_list,self.page_url,lang='ru')
+    self.urls_dataframe = pd.concat([self.urls_dataframe,self._url_schema],ignore_index=True)
     self._send_to_bigquery()
-    print('\n Total no. of URLS sent to BigQuery:'+str(len(self.total_urls)))
-    
+    print('\n Total no. of URLS sent to BigQuery:'+str(len(self.total_urls))) 
 
 class scielo_url(URL_builder):
   """
