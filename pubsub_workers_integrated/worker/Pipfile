@@ -12,6 +12,7 @@ google-cloud-pubsub = "*"
 google-cloud-logging = "*"
 tldextract = "*"
 tld = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.8"

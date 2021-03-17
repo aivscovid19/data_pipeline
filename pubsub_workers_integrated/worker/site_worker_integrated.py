@@ -63,39 +63,36 @@ class SiteWorkerIntegrated:
             data(dictionary): Scraped data in form of dictionary.
         """
         miner.gather(url)
-        print(miner.results)
 
-        time = datetime.min.time()
-        data = {
-            "abstract": miner.results['abstract'],
-            "title": miner.results['title'],
-            "authors": miner.results['authors'],
-            "language": miner.results['language'],
-            "doi": miner.results['doi'],
-            "link": miner.results['url'],
-            "source": miner.results['source'],
-            "body": miner.results['body'],
-            "publication_date": miner.results['date_publication'],
-            # Dates are somewhat complicated - but this essentially just converts YYYY-MM-DD or YYYY/MM/DD
-            # into a datetime object (at midnight)
-            "acquisition_date": datetime.combine(date(*[int(x) for x in miner.results['date_aquisition'].split("-")]), time),
+        data_map = {
+            "abstract": 'abstract',
+            "title": 'title',
+            "authors": 'authors',
+            "language": 'language',
+            "doi": 'doi',
+            "link": 'url',
+            "source": 'source',
+            "body": 'body',
+            "publication_date": 'date_publication',
+            "acquisition_date": 'date_aquisition' # Note the typo - this will be fixed in centaurminer > 0.1.0
         }
+        # Select relevant data using the map
+        data = {}
+        for key, val in data_map.items():
+            data[key] = miner.results.get(val)
+
+        # special case for the acquisition date (which WILL be fixed in a future version of centaurminer)
+        # Justs adds a time (midnight) and converts a string into a datetime object
+        time = datetime.min.time()
+        data["acquisition_date"] = datetime.combine(date(*[int(x) for x in data['acquisition_date'].split("-")]), time),
 
         # Add the meta info
-        meta_info = {
-            "references": miner.results['references'],
-            "search_keyword": miner.results['search_keyword'],
-            "license": miner.results['license'],
-            "extra_link": miner.results['extra_link']
-        }
+        meta_info = {}
+        for key, val in miner.results.items():
+            if key not in data_map.values():
+                meta_info[key] = miner.results[key]
 
-        # Scielo specific meta-info
-        if miner.results['title_translated']:
-            meta_info['title_translated'] = miner.results['title_translated']
-        if miner.results['abstract_translated']:
-            meta_info['abstract_translated'] = miner.results['abstract_translated']
-
-        data['meta_info'] = json.dumps(meta_info, ensure_ascii=False)
+        data['meta_info'] = json.dumps(meta_info, ensure_ascii=False, default=repr)
         return data
 
     @classmethod
@@ -223,7 +220,26 @@ class ScieloSiteWorker(SiteWorkerIntegrated):
         self.driver_path = driver_path
   
     def scrape_articles(self):
-        miner = ScieloMiner.ScieloEngine(ScieloMiner.ScieloLocations, driver_path=self.driver_path)
+        '''
+        There are several formats for scielo.br articles - choose a different miner for each.
+        '''
+        # Just get any webdriver to start, since we need to find elements on the page
+        from centaurminer import MiningEngine, PageLocations
+        wd = MiningEngine(PageLocations).wd
+        wd.get(self.url)
+
+        # Look for key elements that define the different formats
+        miner = None
+        if wd.find_elements_by_id('article-body'):
+            print("Detected fully structured article")
+            miner = ScieloMiner.ScieloEngineStructured(ScieloMiner.ScieloLocationsStructured, driver_path=self.driver_path)
+        elif wd.find_elements_by_css_selector('.index\,pt, .index\,en, .index\,es'):
+            print("Detected flat article")
+            miner = ScieloMiner.ScieloEngineFlat(ScieloMiner.ScieloLocationsFlat, driver_path=self.driver_path)
+        else:
+            print("idk, tell me more about this format")
+            print(wd.page_source)
+            miner = ScieloMiner.ScieloEngine(ScieloMiner.ScieloLocations, driver_path = self.driver_path)
         return self.scrape_data(miner, self.url)
 
 
@@ -246,3 +262,12 @@ class PreprintsSiteWorker(SiteWorkerIntegrated):
     def scrape_articles(self):
         miner = PreprintsMiner.PreprintsEngine(PreprintsMiner.PreprintsLocations, driver_path=self.driver_path)
         return self.scrape_data(miner, self.url)
+
+if __name__ == "__main__":
+    # Scrape a site given as a command line arg
+    from sys import argv
+    assert len(argv) == 2, "Must include a URL"
+
+    print(argv[1])
+    data = SiteWorkerIntegrated().send_request(argv[1])
+    print(*data.items(), sep="\n\n")
