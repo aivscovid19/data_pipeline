@@ -17,9 +17,7 @@ fi
 
 # Load sample table for integration tests
 
-#bq mk --dataset $PROJECT_ID:sample
-#bq cp -a -f -n ai-vs-covid19:ula_test_urls.status_table $PROJECT_ID:$STATUS_TABLE_ID
-#bq query "DROP "
+bq load --autodetect $STATUS_TABLE_ID scielo.csv
 
 # Setup of PubSub topics
 gcloud pubsub topics create $DEAD_LETTER_TOPIC_ID
