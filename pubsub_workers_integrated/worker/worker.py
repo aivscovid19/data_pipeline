@@ -77,6 +77,8 @@ def callback(message):
         return
     if not data.get('language'):
         data['language'] = status['language']  # Should always be true...
+    if isinstance(data['acquisition_date'], datetime):
+        data['acquisition_date'] = data['acquisition_date'].isoformat()
 
     # Send results to the data table
     errors = dataTable.insert_row(data)
