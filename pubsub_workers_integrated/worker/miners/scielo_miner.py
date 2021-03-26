@@ -154,7 +154,7 @@ class ScieloMiner:
                 for keyword in ScieloMiner.key_strings:
                     if keyword.lower().startswith(keyword):
                         # Remove the keyword string and maybe a following punctuation mark and space
-                        keywords = re.sub(f"{keyword.lower()}[:;,.]? ?", keywords.lower())
+                        keywords = re.sub(f"{keyword.lower()}[:;,.]? ?", "", keywords.lower())
                         keywords = re.split(";|:|,", keywords)
                         self.results['keywords'].extend([ key.strip(' .') for key in keywords])
                         break
@@ -232,7 +232,7 @@ class ScieloMiner:
                         for keyword in ScieloMiner.key_strings:
                             if keyword.lower().startswith(keyword):
                                 # Remove the keyword string and maybe a following punctuation mark and space
-                                keywords = re.sub(f"{keyword.lower()}[:;,.]? ?", keywords.lower())
+                                keywords = re.sub(f"{keyword.lower()}[:;,.]? ?", "", keywords.lower())
                                 keywords = re.split(";|:|,", keywords)
                                 self.results['keywords'].extend([ key.strip(' .') for key in keywords])
                                 break
