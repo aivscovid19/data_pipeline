@@ -81,6 +81,7 @@ def callback(message):
         data['acquisition_date'] = data['acquisition_date'].isoformat()
 
     # Send results to the data table
+    print(data)
     errors = dataTable.insert_row(data)
     if errors != []:
         LogToGCP(f"We've got some errors when updating bq: {errors}")
