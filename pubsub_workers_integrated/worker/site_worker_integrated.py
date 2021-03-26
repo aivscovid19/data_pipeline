@@ -1,6 +1,6 @@
 import json
 from tld import get_fld
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 
 from miners import ArxivMiner
 from miners import BiorxivMiner
