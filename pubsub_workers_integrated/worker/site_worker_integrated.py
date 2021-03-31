@@ -86,7 +86,8 @@ class SiteWorkerIntegrated:
         #time = datetime.min.time()
         #data["acquisition_date"] = datetime.combine(date(*[int(x) for x in data['acquisition_date'].split("-")]), time),
         # Simple acquisition date - overwrites the date from centaurminer.
-        data['acquisition_date'] = datetime.now(timezone.utc).isoformat()
+        data['acquisition_date'] = datetime.utcnow()
+        #data['acquisition_date'] = datetime.now(timezone.utc).isoformat()
 
         # Add the meta info
         meta_info = {}

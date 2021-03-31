@@ -69,16 +69,12 @@ class BQTable:
         return json_rows
 
     def insert_row(self, row):
-        print(bigquery.__version__)
-        print("Inserting row to bigquery:", row)
         return self._client.insert_rows(
             table = self._table,
             rows = [row]
         )
 
     def insert_rows(self, rows):
-        print(bigquery.__version__)
-        print("Inserting rows to bigquery:", rows)
         return self._client.insert_rows(
             table = self._table,
             rows = rows
