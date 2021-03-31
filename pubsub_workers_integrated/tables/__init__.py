@@ -63,24 +63,22 @@ class BQTable:
         '''
         Queries the table using the given query, returning a list-of-dicts representation of the data.
         '''
-        #client = bigquery.Client(self.table_id.split(".")[0])
         query_job = self._client.query(query)
         rows = query_job.result()
         json_rows = [ dict(row) for row in rows ]
-        #json_rows = []
-        #for row in rows:
-        #    row = dict(row)
-        #    row.pop('rn')  # Don't include the row number entry
-        #    json_rows.append(row)
         return json_rows
 
     def insert_row(self, row):
+        print(bigquery.__version__)
+        print("Inserting row to bigquery:", row)
         return self._client.insert_rows(
             table = self._table,
             rows = [row]
         )
 
     def insert_rows(self, rows):
+        print(bigquery.__version__)
+        print("Inserting rows to bigquery:", rows)
         return self._client.insert_rows(
             table = self._table,
             rows = rows
