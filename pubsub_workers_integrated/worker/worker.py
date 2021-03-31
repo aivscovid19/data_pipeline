@@ -32,7 +32,8 @@ def callback(message):
 
     # Tell bq that we received the request
     status['status'] = 'Started Mining'
-    status['timestamp'] = datetime.now(timezone.utc)
+    status['timestamp'] = datetime.utcnow()
+    #status['timestamp'] = datetime.now(timezone.utc).isoformat()
     status['worker_id'] = worker_name
     errors = statusTable.insert_row(status)
     if errors != []:
@@ -47,7 +48,8 @@ def callback(message):
     except MinerNotFoundError as e:
         LogToGCP("Mining failed: " + str(e))
         status['status'] = 'Failed - No miner'
-        status['timestamp'] = datetime.now(timezone.utc)
+        status['timestamp'] = datetime.utcnow()
+        #status['timestamp'] = datetime.now(timezone.utc).isoformat()
         errors = statusTable.insert_row(status)
         message.nack()
         if errors != []:
@@ -56,7 +58,8 @@ def callback(message):
     except WebDriverException as e:  # Handle webdriver timeouts
         LogToGCP(str(e))
         status['status'] = 'Failed - Timeout'
-        status['timestamp'] = datetime.now(timezone.utc)
+        status['timestamp'] = datetime.utcnow()
+        #status['timestamp'] = datetime.now(timezone.utc).isoformat()
         errors = statusTable.insert_row(status)
         message.nack()
         if errors != []:
@@ -67,7 +70,8 @@ def callback(message):
     if data is None:
         LogToGCP("Mining returned no results.")
         status['status'] = "Failed - No results"
-        status['timestamp'] = datetime.now(timezone.utc)
+        status['timestamp'] = datetime.utcnow()
+        #status['timestamp'] = datetime.now(timezone.utc).isoformat()
         errors = statusTable.insert_row(status)
         if errors != []:
             LogToGCP(f"We've got some errors when updating bq: {errors}")
@@ -85,7 +89,8 @@ def callback(message):
 
     # Send an update to bq that we're done
     status['status'] = 'Finished Mining'
-    status['timestamp'] = datetime.now(timezone.utc)
+    status['timestamp'] = datetime.utcnow()
+    #status['timestamp'] = datetime.now(timezone.utc).isoformat()
     errors = statusTable.insert_row(status)
     if errors != []:
         LogToGCP(f"We've got some errors when updating bq: {errors}")

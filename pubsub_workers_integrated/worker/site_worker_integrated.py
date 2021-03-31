@@ -1,6 +1,6 @@
 import json
 from tld import get_fld
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 
 from miners import ArxivMiner
 from miners import BiorxivMiner
@@ -83,8 +83,11 @@ class SiteWorkerIntegrated:
 
         # special case for the acquisition date (which WILL be fixed in a future version of centaurminer)
         # Justs adds a time (midnight) and converts a string into a datetime object
-        time = datetime.min.time()
-        data["acquisition_date"] = datetime.combine(date(*[int(x) for x in data['acquisition_date'].split("-")]), time),
+        #time = datetime.min.time()
+        #data["acquisition_date"] = datetime.combine(date(*[int(x) for x in data['acquisition_date'].split("-")]), time),
+        # Simple acquisition date - overwrites the date from centaurminer.
+        data['acquisition_date'] = datetime.utcnow()
+        #data['acquisition_date'] = datetime.now(timezone.utc).isoformat()
 
         # Add the meta info
         meta_info = {}
